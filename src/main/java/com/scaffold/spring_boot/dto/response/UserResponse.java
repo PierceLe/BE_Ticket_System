@@ -13,10 +13,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private String id;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private LocalDate dob;
-    private Set<String> roles;
+    String username;
+    String password;
+    Integer unitId;
+    String email;
+    String role;
 }
