@@ -1,0 +1,13 @@
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: "scaffold"
+      MYSQL_ROOT_PASSWORD: "Pierce Le"
+    ports:
+      - 3306:3306
+    restart: always
+    volumes:
+      - mysql:/var/lib/mysql
+volumes:
+  mysql:
