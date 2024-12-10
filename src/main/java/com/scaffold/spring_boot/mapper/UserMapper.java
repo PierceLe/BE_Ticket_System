@@ -14,7 +14,5 @@ public interface UserMapper {
     // target mapping is user, which means, all request will be mapped to Users
     void updateUser(@MappingTarget Users user, UserUpdateRequest request);
 
-    @Mapping(source = "firstName", target = "firstName")
-//    @Mapping(target = "password", ignore = true)
     UserResponse toUserResponse(Users user);
 }
