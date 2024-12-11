@@ -20,6 +20,7 @@ public enum ErrorCode {
     EMAIL_NOT_EMPTY(400, "Email is empty"),
     UNIT_ID_NOT_EMPTY(400, "Unid id is empty"),
     ROLE_ID_NOT_EMPTY(400, "Role id is empty"),
+    UNIT_ID_NOT_EXISTED(400, "unit id is not existed"),
     ;
     private final int code;
     private final String message;

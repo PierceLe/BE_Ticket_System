@@ -5,11 +5,13 @@ import com.scaffold.spring_boot.dto.request.UserCreationRequest;
 import com.scaffold.spring_boot.dto.request.UserUpdatePasswordRequest;
 import com.scaffold.spring_boot.dto.request.UserUpdateRequest;
 import com.scaffold.spring_boot.dto.response.UserResponse;
+import com.scaffold.spring_boot.entity.Unit;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UserMapper;
+import com.scaffold.spring_boot.repository.UnitRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final UnitRepository unitRepository;
     private final UserMapper userMapper;
 
     @Transactional
@@ -89,6 +92,17 @@ public class UserService {
             throw new RuntimeException("role not found");
         }
         users.setRole(role);
+        return userMapper.toUserResponse(userRepository.save(users));
+    }
+
+    public UserResponse updateUnit(String id, Integer unit) {
+        Users users = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+
+        if (!unitRepository.existsById(unit)) {
+            throw new AppException(ErrorCode.UNIT_ID_NOT_EXISTED);
+        }
+        users.setUnitId(unit);
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
