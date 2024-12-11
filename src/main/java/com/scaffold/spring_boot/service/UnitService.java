@@ -1,7 +1,9 @@
 package com.scaffold.spring_boot.service;
 
+import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.UnitCreationRequest;
 import com.scaffold.spring_boot.dto.response.UnitCreationResponse;
+import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.entity.Unit;
 import com.scaffold.spring_boot.mapper.UnitMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
@@ -21,8 +23,11 @@ public class UnitService {
         return unitMapper.toUnitCreationResponse(unitRepository.save(unit));
     }
 
-//    public List<UnitCreationResponse> getAllUnits() {
-//        List<Unit> units = unitRepository.findAll();
-//    }
+    public ApiResponse<List<UnitResponse>> getAllUnits() {
+        List<Unit> units = unitRepository.findAll();
+        return ApiResponse.<List<UnitResponse>>builder()
+                .result(unitMapper.toUnitResponseList(units))
+                .build();
+    }
 
 }
