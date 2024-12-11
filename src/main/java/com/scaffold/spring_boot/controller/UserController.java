@@ -20,8 +20,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ApiResponse<Users> createUser(@RequestBody @Valid UserCreationRequest userCreationRequest) {
-        ApiResponse<Users> apiResponse = new ApiResponse<>();
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest userCreationRequest) {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.createUser(userCreationRequest));
         return apiResponse;
     }
@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponse getUserById(
+    public Users getUserById(
             @PathVariable @NonNull String id
     ) {
         return userService.getUserById(id);
