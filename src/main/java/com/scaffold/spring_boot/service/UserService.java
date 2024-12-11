@@ -92,8 +92,6 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
-
-
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
