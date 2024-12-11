@@ -23,7 +23,6 @@ public class UnitService {
 
     public List<UnitCreationResponse> getAllUnits() {
         List<Unit> units = unitRepository.findAll();
-
     }
 
 }

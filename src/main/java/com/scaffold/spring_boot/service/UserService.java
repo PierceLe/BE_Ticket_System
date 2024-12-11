@@ -73,7 +73,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public UserResponse updatePassword(String id, UserUpdatePasswordRequest request) {
+    public UserResponse updateUserPassword(String id, UserUpdatePasswordRequest request) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -84,7 +84,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateRole(String id, String role) {
+    public UserResponse updateUserRole(String id, String role) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
         try {
@@ -97,7 +97,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
-    public UserResponse updateUnit(String id, Integer unit) {
+    public UserResponse updateUserUnit(String id, Integer unit) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
 
