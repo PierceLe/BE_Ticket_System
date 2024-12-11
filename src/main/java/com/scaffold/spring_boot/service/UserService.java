@@ -5,7 +5,6 @@ import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.UserCreationRequest;
 import com.scaffold.spring_boot.dto.request.UserUpdatePasswordRequest;
 import com.scaffold.spring_boot.dto.request.UserUpdateRequest;
-import com.scaffold.spring_boot.dto.response.IntrospectResponse;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;

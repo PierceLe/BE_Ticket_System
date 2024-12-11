@@ -21,4 +21,9 @@ public class UnitService {
         return unitMapper.toUnitCreationResponse(unitRepository.save(unit));
     }
 
+    public List<UnitCreationResponse> getAllUnits() {
+        List<Unit> units = unitRepository.findAll();
+
+    }
+
 }
