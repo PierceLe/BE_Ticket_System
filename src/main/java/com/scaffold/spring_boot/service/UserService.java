@@ -11,6 +11,7 @@ import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UserMapper;
 import com.scaffold.spring_boot.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,10 +54,15 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
     }
-
+    @Transactional
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
+        if (userRepository.existsByEmail(request.getEmail())
+                && !user.getEmail().equals(request.getEmail())
+        ) {
+            throw new AppException(ErrorCode.USER_EMAIL_EXISTED);
+        }
         userMapper.updateUser(user, request);
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -70,21 +76,6 @@ public class UserService {
         }
         return userMapper.toUserResponse(userRepository.save(users));
     }
-
-    public UserResponse updateEmail(String id, String newEmail) {
-        Users users = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("user not found"));
-        if (userRepository.existsByEmail(newEmail)
-                && !users.getEmail().equals(newEmail)
-        ) {
-            throw new AppException(ErrorCode.USER_EMAIL_EXISTED);
-        }
-        users.setEmail(newEmail);
-        return userMapper.toUserResponse(userRepository.save(users));
-    }
-
-
-
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);

@@ -18,4 +18,6 @@ public class UserUpdateRequest {
     String fullName;
     @Nullable
     LocalDate dob;
+    @Nullable
+    String email;
 }
