@@ -28,6 +28,9 @@ public class UserService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.USER_EMAIL_EXISTED);
+        }
 
 
 //        user.setUsername(request.getUsername());
@@ -40,10 +43,6 @@ public class UserService {
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        Set<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-        user.setRoles(roles);
 
         return userRepository.save(user);
     }

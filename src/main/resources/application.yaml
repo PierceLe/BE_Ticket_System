@@ -1,11 +1,11 @@
 server:
   port: 8080
   servlet:
-    context-path: /identity
+    context-path: /api/v1
 
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/ticket_system"
+    url: "jdbc:mysql://localhost:3306/ticketsystem"
     username: root
     password: fpt_itsm
   jpa:

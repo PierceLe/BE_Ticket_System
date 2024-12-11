@@ -37,6 +37,7 @@ public class GlobalExceptionHandler {
             errorCode = ErrorCode.valueOf(enumKey);
         }
         catch (IllegalArgumentException exception) {
+            System.out.println(enumKey);
             // catch for the situation
         }
         ApiResponse apiResponse = new ApiResponse();
