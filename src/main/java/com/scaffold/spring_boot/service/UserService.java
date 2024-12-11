@@ -1,11 +1,12 @@
 package com.scaffold.spring_boot.service;
 
 
+import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.UserCreationRequest;
 import com.scaffold.spring_boot.dto.request.UserUpdatePasswordRequest;
 import com.scaffold.spring_boot.dto.request.UserUpdateRequest;
+import com.scaffold.spring_boot.dto.response.IntrospectResponse;
 import com.scaffold.spring_boot.dto.response.UserResponse;
-import com.scaffold.spring_boot.entity.Unit;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;
 import com.scaffold.spring_boot.exception.AppException;
@@ -50,8 +51,10 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public List<Users> getAllUsers() {
-        return userRepository.findAll();
+    public ApiResponse<List<Users>> getAllUsers() {
+        return ApiResponse.<List<Users>>builder()
+                .result(userRepository.findAll())
+                .build();
     }
 
     public Users getUserById(String id) {

@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<Users> getAllUsers() {
+    public ApiResponse<List<Users>> getAllUsers() {
         return userService.getAllUsers();
     }
 
