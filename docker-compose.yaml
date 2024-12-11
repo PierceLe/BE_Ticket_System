@@ -2,8 +2,8 @@ services:
   mysql:
     image: mysql:8
     environment:
-      MYSQL_DATABASE: "scaffold"
-      MYSQL_ROOT_PASSWORD: "Pierce Le"
+      MYSQL_DATABASE: "ticketsystem"
+      MYSQL_ROOT_PASSWORD: "fpt_itsm"
     ports:
       - 3306:3306
     restart: always
