@@ -25,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Transactional
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -32,16 +33,16 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.USER_EMAIL_EXISTED);
         }
-//        user.setUsername(request.getUsername());
-//        user.setPassword(request.getPassword());
-//        user.setDob(request.getDob());
-//        user.setFirstName(request.getFirstName());
-//        user.setLastName(request.getLastName(
-// ------- same with this line----------------------------
         Users user = userMapper.toUser(request);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        try {
+            Role role = Role.valueOf(request.getRole());
+        }
+        catch (IllegalArgumentException e) {
+            throw new RuntimeException("role not found");
+        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -76,6 +77,22 @@ public class UserService {
         }
         return userMapper.toUserResponse(userRepository.save(users));
     }
+
+    @Transactional
+    public UserResponse updateRole(String id, String role) {
+        Users users = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+        try {
+            Role roles = Role.valueOf(role);
+        }
+        catch (IllegalArgumentException e) {
+            throw new RuntimeException("role not found");
+        }
+        users.setRole(role);
+        return userMapper.toUserResponse(userRepository.save(users));
+    }
+
+
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);
