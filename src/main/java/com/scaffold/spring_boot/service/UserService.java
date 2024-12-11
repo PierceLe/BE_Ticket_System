@@ -29,6 +29,7 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
+
 //        user.setUsername(request.getUsername());
 //        user.setPassword(request.getPassword());
 //        user.setDob(request.getDob());
