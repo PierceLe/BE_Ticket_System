@@ -2,6 +2,7 @@ package com.scaffold.spring_boot.service;
 
 
 import com.scaffold.spring_boot.dto.request.UserCreationRequest;
+import com.scaffold.spring_boot.dto.request.UserUpdatePasswordRequest;
 import com.scaffold.spring_boot.dto.request.UserUpdateRequest;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
@@ -24,15 +25,12 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserResponse createUser(UserCreationRequest request) {
-
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.USER_EMAIL_EXISTED);
         }
-
-
 //        user.setUsername(request.getUsername());
 //        user.setPassword(request.getPassword());
 //        user.setDob(request.getDob());
@@ -62,6 +60,31 @@ public class UserService {
         userMapper.updateUser(user, request);
         return userMapper.toUserResponse(userRepository.save(user));
     }
+
+    public UserResponse updatePassword(String id, UserUpdatePasswordRequest request) {
+        Users users = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        if (passwordEncoder.matches(request.getOldPassword(), users.getPassword())) {
+            users.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        }
+        return userMapper.toUserResponse(userRepository.save(users));
+    }
+
+    public UserResponse updateEmail(String id, String newEmail) {
+        Users users = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+        if (userRepository.existsByEmail(newEmail)
+                && !users.getEmail().equals(newEmail)
+        ) {
+            throw new AppException(ErrorCode.USER_EMAIL_EXISTED);
+        }
+        users.setEmail(newEmail);
+        return userMapper.toUserResponse(userRepository.save(users));
+    }
+
+
+
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);

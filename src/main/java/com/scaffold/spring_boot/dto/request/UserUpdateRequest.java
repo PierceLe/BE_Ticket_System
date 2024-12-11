@@ -11,11 +11,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserUpdateRequest {
     @Nullable
-    private String password;
+    String avatarUrl;
     @Nullable
-    private String firstName;
+    String description;
     @Nullable
-    private String lastName;
+    String fullName;
     @Nullable
-    private LocalDate dob;
+    LocalDate dob;
 }
