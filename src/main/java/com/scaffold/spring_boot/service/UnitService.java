@@ -11,16 +11,20 @@ import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UnitMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UnitService {
     private final UnitRepository unitRepository;
     private final UnitMapper unitMapper;
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public UnitCreationResponse createUnit(UnitCreationRequest request) {
         Unit unit = unitMapper.toUnit(request);
         return unitMapper.toUnitCreationResponse(unitRepository.save(unit));

@@ -15,6 +15,7 @@ import com.scaffold.spring_boot.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -127,6 +128,16 @@ public class UserService {
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String id = context.getAuthentication().getName();
+
+        Users user = userRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED)
+                );
+        return userMapper.toUserResponse(user);
     }
 
 }
