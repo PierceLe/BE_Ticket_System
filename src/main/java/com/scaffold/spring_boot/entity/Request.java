@@ -40,5 +40,16 @@ public class Request {
     LocalDateTime expectedFinish;
     String cause;
     String solution;
+    @Column(name = "qa_opinion")
+    String qaOpinion;
+    @Column(name = "cause_details")
+    String causeDetails;
+    String description;
+    String file;
+    @Column(name = "assigned_note")
+    String assignedNote;
+    @Column(name = "rejected_reason")
+    String rejectedReason;
+
 
 }
