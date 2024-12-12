@@ -1,9 +1,6 @@
 package com.scaffold.spring_boot.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "requests")
 public class Request {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     String title;
     @Column(name = "project_id")

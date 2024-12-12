@@ -24,7 +24,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.StringJoiner;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticateUser(AuthenticationRequest authenticationRequest) {
         Users user = userRepository.findByUsername(authenticationRequest.getUsername());
-        if (user == null) {
+        if (Objects.isNull(user)) {
             throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);

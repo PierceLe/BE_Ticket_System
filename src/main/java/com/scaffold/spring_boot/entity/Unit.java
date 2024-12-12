@@ -1,8 +1,6 @@
 package com.scaffold.spring_boot.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "units")
 public class Unit {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     String name;
 }

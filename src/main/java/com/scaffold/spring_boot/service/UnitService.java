@@ -10,6 +10,7 @@ import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UnitMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -19,11 +20,18 @@ import java.util.List;
 public class UnitService {
     private final UnitRepository unitRepository;
     private final UnitMapper unitMapper;
+    private final ModelMapper modelMapper;
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public UnitCreationResponse createUnit(UnitCreationRequest request) {
-        Unit unit = unitMapper.toUnit(request);
-        return unitMapper.toUnitCreationResponse(unitRepository.save(unit));
+        Boolean unitExist = unitRepository.existsByName(request.getName());
+
+        if (unitExist) {
+            throw new AppException(ErrorCode.UNIT_EXISTED);
+        }
+
+        Unit unit = modelMapper.map(request, Unit.class);
+        unitRepository.save(unit);
+        return modelMapper.map(unit, UnitCreationResponse.class);
     }
 
     public ApiResponse<List<UnitResponse>> getAllUnits() {

@@ -7,6 +7,8 @@ import com.scaffold.spring_boot.repository.UnitRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +27,6 @@ public class ApplicationInitConfig {
         return args -> {
             if (!unitRepository.existsById(1)) {
                 Unit units = Unit.builder()
-                        .id(1)
                         .name("Director")
                         .build();
                 unitRepository.save(units);
@@ -46,5 +47,13 @@ public class ApplicationInitConfig {
                 log.warn("admin user has been created with private password in dotenv files");
             }
         };
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STANDARD);
+        return modelMapper;
     }
 }
