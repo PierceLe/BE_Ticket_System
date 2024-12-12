@@ -14,6 +14,7 @@ import com.scaffold.spring_boot.repository.UnitRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +27,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final UnitRepository unitRepository;
@@ -64,13 +66,13 @@ public class UserService {
                 .build();
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
     public Users getUserById(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
     @Transactional
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         Users user = userRepository.findById(id)
@@ -84,7 +86,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
     public UserResponse updateUserPassword(String id, UserUpdatePasswordRequest request) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
@@ -94,7 +96,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
     @Transactional
     public UserResponse updateUserRole(String id, UserUpdateRoleRequest request) {
         Users users = userRepository.findById(id)
@@ -109,7 +111,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateUserUnit(String id, UserUpdateUnitRequest unit) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
@@ -121,7 +123,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
     public UserResponse updateUserName(String id, UserUpdateUsernameRequest request) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
