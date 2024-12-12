@@ -45,7 +45,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
-        var token = generateToken(user.getUsername());
+        var token = generateToken(user.getId());
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();

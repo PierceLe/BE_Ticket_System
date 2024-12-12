@@ -45,7 +45,6 @@ public class UserService {
         catch (IllegalArgumentException e) {
             throw new RuntimeException("role not found");
         }
-
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
