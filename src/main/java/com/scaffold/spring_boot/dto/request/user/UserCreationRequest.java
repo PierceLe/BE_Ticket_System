@@ -1,12 +1,10 @@
-package com.scaffold.spring_boot.dto.request;
+package com.scaffold.spring_boot.dto.request.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @Builder

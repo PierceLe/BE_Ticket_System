@@ -2,8 +2,8 @@ package com.scaffold.spring_boot.service;
 
 
 import com.scaffold.spring_boot.dto.request.ApiResponse;
-import com.scaffold.spring_boot.dto.request.UserCreationRequest;
-import com.scaffold.spring_boot.dto.request.user_update.*;
+import com.scaffold.spring_boot.dto.request.user.UserCreationRequest;
+import com.scaffold.spring_boot.dto.request.user.*;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;

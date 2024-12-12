@@ -1,10 +1,12 @@
 package com.scaffold.spring_boot.service;
 
 import com.scaffold.spring_boot.dto.request.ApiResponse;
-import com.scaffold.spring_boot.dto.request.UnitCreationRequest;
+import com.scaffold.spring_boot.dto.request.unit.UnitCreationRequest;
 import com.scaffold.spring_boot.dto.response.UnitCreationResponse;
 import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.entity.Unit;
+import com.scaffold.spring_boot.exception.AppException;
+import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UnitMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,21 @@ public class UnitService {
         return ApiResponse.<List<UnitResponse>>builder()
                 .result(unitMapper.toUnitResponseList(units))
                 .build();
+    }
+
+    public UnitResponse getUnitById(Integer id) {
+        Unit unit = unitRepository.findById(id)
+        .orElseThrow(() ->  new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
+
+        return unitMapper.toUnitResponse(unit);
+    }
+
+    public UnitResponse getUnitByName(String name) {
+        Unit unit = unitRepository.findByName(name)
+                .orElseThrow(() -> new AppException(ErrorCode.UNIT_NAME_NOT_EXISTED));
+
+        return unitMapper.toUnitResponse(unit);
+
     }
 
 }

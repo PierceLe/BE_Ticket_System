@@ -22,6 +22,7 @@ public enum ErrorCode {
     ROLE_ID_NOT_EMPTY(400, "Role id is empty"),
     UNIT_ID_NOT_EXISTED(400, "unit id is not existed"),
     USER_NAME_EXISTED(400, "Username already existed"),
+    UNIT_NAME_NOT_EXISTED(400, "Unit name is not existed"),
     ;
     private final int code;
     private final String message;

@@ -1,4 +1,4 @@
-package com.scaffold.spring_boot.dto.request;
+package com.scaffold.spring_boot.dto.request.unit;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

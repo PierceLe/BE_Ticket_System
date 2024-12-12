@@ -1,4 +1,4 @@
-package com.scaffold.spring_boot.dto.request.user_update;
+package com.scaffold.spring_boot.dto.request.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

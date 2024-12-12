@@ -1,8 +1,8 @@
 package com.scaffold.spring_boot.mapper;
 
-import com.scaffold.spring_boot.dto.request.UserCreationRequest;
-import com.scaffold.spring_boot.dto.request.user_update.UserUpdateRequest;
-import com.scaffold.spring_boot.dto.request.user_update.UserUpdateUsernameRequest;
+import com.scaffold.spring_boot.dto.request.user.UserCreationRequest;
+import com.scaffold.spring_boot.dto.request.user.UserUpdateRequest;
+import com.scaffold.spring_boot.dto.request.user.UserUpdateUsernameRequest;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import org.mapstruct.Mapper;

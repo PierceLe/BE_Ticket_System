@@ -1,4 +1,4 @@
-package com.scaffold.spring_boot.dto.request.user_update;
+package com.scaffold.spring_boot.dto.request.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateUsernameRequest {
-    private String username;
+public class UserUpdateRoleRequest {
+    private String role;
 }
