@@ -27,6 +27,7 @@ public enum ErrorCode {
     UNIT_NAME_NOT_EXISTED(400, "Unit name is not existed", HttpStatus.NOT_FOUND),
     UNIT_NAME_EXISTED(400, "Unit name already existed", HttpStatus.CONFLICT),
     INVALID_TOKEN(401, "Invalid token format. Expected 'Bearer <token>'", HttpStatus.UNAUTHORIZED),
+    ACCESS_DENIED(403, "Access denied", HttpStatus.FORBIDDEN),
     ;
     private final int code;
     private final String message;
