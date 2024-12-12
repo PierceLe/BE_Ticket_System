@@ -57,16 +57,20 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<Users>> getAllUsers() {
         return ApiResponse.<List<Users>>builder()
                 .result(userRepository.findAll())
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public Users getUserById(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
     }
+
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @Transactional
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         Users user = userRepository.findById(id)
@@ -80,6 +84,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public UserResponse updateUserPassword(String id, UserUpdatePasswordRequest request) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
@@ -89,6 +94,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @Transactional
     public UserResponse updateUserRole(String id, UserUpdateRoleRequest request) {
         Users users = userRepository.findById(id)
@@ -103,6 +109,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public UserResponse updateUserUnit(String id, UserUpdateUnitRequest unit) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
@@ -114,6 +121,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public UserResponse updateUserName(String id, UserUpdateUsernameRequest request) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
@@ -126,6 +134,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }

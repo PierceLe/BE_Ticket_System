@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 // null attribute will not being shown
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-    // default code is sucess
+    // default code is successful
     private int code = 200;
     private String message;
     private T result;
