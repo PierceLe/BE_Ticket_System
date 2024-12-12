@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -26,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UnitRepository unitRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponse createUser(UserCreationRequest request) {
@@ -39,13 +42,15 @@ public class UserService {
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        Role role;
         try {
-            Role role = Role.valueOf(request.getRole());
+            role = Role.valueOf(request.getRole());
         }
         catch (IllegalArgumentException e) {
             throw new RuntimeException("role not found");
         }
-
+        user.setRole(role.name());
+        user.setCreatedAt(LocalDate.now());
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -75,7 +80,6 @@ public class UserService {
     public UserResponse updateUserPassword(String id, UserUpdatePasswordRequest request) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (passwordEncoder.matches(request.getOldPassword(), users.getPassword())) {
             users.setPassword(passwordEncoder.encode(request.getNewPassword()));
         }

@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Service
 @RequiredArgsConstructor
@@ -45,14 +46,22 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
-        var token = generateToken(user.getUsername());
+        var token = generateToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
     }
 
     public IntrospectResponse introspect(IntrospectRequest introspectRequest) throws JOSEException, ParseException {
-        var token = introspectRequest.getToken();
+        var bearerToken = introspectRequest.getToken();
+
+        // Validate Bearer token format
+        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+
+        var token = bearerToken.substring(7); // Remove "Bearer " prefix
+
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -65,17 +74,17 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(String username) {
+    private String generateToken(Users user) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getId())
                 .issuer("hale0087@uni.sydney.edu.au")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(48, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("CustomClaims", "Custom")
+                .claim("scope", user.getRole())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -87,5 +96,4 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
-
 }
