@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateUnitRequest {
-    Integer unitId;
+public class UserUpdateUsernameRequest {
+    private String username;
 }

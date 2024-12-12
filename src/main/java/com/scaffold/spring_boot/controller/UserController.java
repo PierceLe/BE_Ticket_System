@@ -2,9 +2,7 @@ package com.scaffold.spring_boot.controller;
 
 import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.UserCreationRequest;
-import com.scaffold.spring_boot.dto.request.user_update.UserUpdatePasswordRequest;
-import com.scaffold.spring_boot.dto.request.user_update.UserUpdateRequest;
-import com.scaffold.spring_boot.dto.request.user_update.UserUpdateRoleRequest;
+import com.scaffold.spring_boot.dto.request.user_update.*;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.service.UserService;
@@ -62,7 +60,7 @@ public class UserController {
         return userService.updateUserPassword(id, userUpdateRequest);
     }
 
-    // update user password
+    // update user role
     @PutMapping("/{id}/role")
     public UserResponse userUpdatePassword(
             @PathVariable @NonNull String id,
@@ -71,13 +69,23 @@ public class UserController {
         return userService.updateUserRole(id, userUpdateRequest);
     }
 
-    // update user Unit
+    // update user unit
     @PutMapping("/{id}/unit")
     public UserResponse userUpdateUnit(
             @PathVariable @NonNull String id,
-            @RequestBody UserUpdateRoleRequest userUpdateRequest
+            @RequestBody UserUpdateUnitRequest request
     ) {
-        return userService.updateUserRole(id, userUpdateRequest);
+        return userService.updateUserUnit(id, request);
+    }
+
+
+    // update user name
+    @PutMapping("{id}/username")
+    public UserResponse userUpdateUsername(
+            @PathVariable @NonNull String id,
+            @RequestBody UserUpdateUsernameRequest request
+    ) {
+        return userService.updateUserName(id, request);
     }
 
 
