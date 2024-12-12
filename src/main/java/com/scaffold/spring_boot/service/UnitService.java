@@ -5,21 +5,17 @@ import com.scaffold.spring_boot.dto.request.unit.UnitCreationRequest;
 import com.scaffold.spring_boot.dto.response.UnitCreationResponse;
 import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.entity.Unit;
-import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UnitMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UnitService {
     private final UnitRepository unitRepository;
     private final UnitMapper unitMapper;
