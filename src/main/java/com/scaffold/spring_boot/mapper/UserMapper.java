@@ -1,11 +1,10 @@
 package com.scaffold.spring_boot.mapper;
 
 import com.scaffold.spring_boot.dto.request.UserCreationRequest;
-import com.scaffold.spring_boot.dto.request.UserUpdateRequest;
+import com.scaffold.spring_boot.dto.request.user_update.UserUpdateRequest;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")

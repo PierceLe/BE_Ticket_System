@@ -1,4 +1,4 @@
-package com.scaffold.spring_boot.dto.request;
+package com.scaffold.spring_boot.dto.request.user_update;
 
 import jakarta.annotation.Nullable;
 import lombok.*;

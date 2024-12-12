@@ -3,8 +3,9 @@ package com.scaffold.spring_boot.service;
 
 import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.UserCreationRequest;
-import com.scaffold.spring_boot.dto.request.UserUpdatePasswordRequest;
-import com.scaffold.spring_boot.dto.request.UserUpdateRequest;
+import com.scaffold.spring_boot.dto.request.user_update.UserUpdatePasswordRequest;
+import com.scaffold.spring_boot.dto.request.user_update.UserUpdateRequest;
+import com.scaffold.spring_boot.dto.request.user_update.UserUpdateRoleRequest;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;
@@ -84,16 +85,16 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserRole(String id, String role) {
+    public UserResponse updateUserRole(String id, UserUpdateRoleRequest request) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
         try {
-            Role roles = Role.valueOf(role);
+            Role roles = Role.valueOf(request.getRole());
         }
         catch (IllegalArgumentException e) {
             throw new RuntimeException("role not found");
         }
-        users.setRole(role);
+        users.setRole(request.getRole());
         return userMapper.toUserResponse(userRepository.save(users));
     }
 

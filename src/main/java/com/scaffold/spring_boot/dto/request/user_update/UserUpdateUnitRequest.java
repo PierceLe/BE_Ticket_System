@@ -1,4 +1,4 @@
-package com.scaffold.spring_boot.dto.request;
+package com.scaffold.spring_boot.dto.request.user_update;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdatePasswordRequest {
-    private String oldPassword;
-    private String newPassword;
+public class UserUpdateUnitRequest {
+    Integer unit;
 }
