@@ -5,6 +5,7 @@ import com.scaffold.spring_boot.dto.request.unit.UnitCreationRequest;
 import com.scaffold.spring_boot.dto.response.UnitCreationResponse;
 import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.entity.Unit;
+import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UnitMapper;
@@ -47,4 +48,19 @@ public class UnitService {
 
     }
 
+    public UnitResponse updateUnit(Integer id, UnitCreationRequest request) {
+        Unit unit = unitRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
+        if (unitRepository.existsByName(request.getName())
+                && !unit.getName().equals(request.getName())
+        ) {
+            throw new AppException(ErrorCode.UNIT_NAME_EXISTED);
+        }
+        unit.setName(request.getName());
+        return unitMapper.toUnitResponse(unitRepository.save(unit));
+    }
+
+    public void deleteUnit(Integer id) {
+        unitRepository.deleteById(id);
+    }
 }

@@ -5,6 +5,7 @@ import com.scaffold.spring_boot.dto.request.unit.UnitCreationRequest;
 import com.scaffold.spring_boot.dto.response.UnitCreationResponse;
 import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.service.UnitService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,12 +30,25 @@ public class UnitController {
     }
 
     @GetMapping("{id}")
-    public UnitResponse getUnitById(@PathVariable Integer id) {
+    public UnitResponse getUnitById(@PathVariable @NonNull Integer id) {
         return unitService.getUnitById(id);
     }
 
     @GetMapping("{name}/name")
-    public UnitResponse getUnitByName(@PathVariable String name) {
+    public UnitResponse getUnitByName(@PathVariable @NonNull String  name) {
        return unitService.getUnitByName(name);
+    }
+
+    @PutMapping("{id}")
+    public UnitResponse updateUnit(
+            @PathVariable @NonNull Integer id,
+            @RequestBody UnitCreationRequest request
+    ) {
+        return unitService.updateUnit(id, request);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteUnit(@PathVariable @NonNull Integer id) {
+        unitService.deleteUnit(id);
     }
 }

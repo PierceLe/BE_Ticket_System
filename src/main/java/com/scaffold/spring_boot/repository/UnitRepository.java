@@ -12,4 +12,6 @@ public interface UnitRepository extends JpaRepository<Unit, Integer> {
     Optional<Unit> findById(@NonNull Integer id);
 
     Optional<Unit> findByName(@NonNull String name);
+
+    Boolean existsByName(@NonNull String name);
 }
