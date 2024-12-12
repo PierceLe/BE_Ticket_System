@@ -52,6 +52,7 @@ public class UnitService {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public UnitResponse updateUnit(Integer id, UnitCreationRequest request) {
         Unit unit = unitRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
@@ -64,6 +65,7 @@ public class UnitService {
         return unitMapper.toUnitResponse(unitRepository.save(unit));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public void deleteUnit(Integer id) {
         unitRepository.deleteById(id);
     }
