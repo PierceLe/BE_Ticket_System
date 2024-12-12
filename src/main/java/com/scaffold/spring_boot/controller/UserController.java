@@ -36,6 +36,13 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping("/myInfo")
+    public ApiResponse<UserResponse> getMyInfo() {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
+                .build();
+    }
+
     // get specific user api
     @GetMapping("/{id}")
     public Users getUserById(
