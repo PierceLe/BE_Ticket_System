@@ -2,9 +2,8 @@ package com.scaffold.spring_boot.service;
 
 
 import com.scaffold.spring_boot.dto.request.ApiResponse;
-import com.scaffold.spring_boot.dto.request.UserCreationRequest;
-import com.scaffold.spring_boot.dto.request.UserUpdatePasswordRequest;
-import com.scaffold.spring_boot.dto.request.UserUpdateRequest;
+import com.scaffold.spring_boot.dto.request.user.UserCreationRequest;
+import com.scaffold.spring_boot.dto.request.user.*;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;
@@ -84,28 +83,40 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUserRole(String id, String role) {
+    public UserResponse updateUserRole(String id, UserUpdateRoleRequest request) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
         try {
-            Role roles = Role.valueOf(role);
+            Role roles = Role.valueOf(request.getRole());
         }
         catch (IllegalArgumentException e) {
             throw new RuntimeException("role not found");
         }
-        users.setRole(role);
+        users.setRole(request.getRole());
         return userMapper.toUserResponse(userRepository.save(users));
     }
 
-    public UserResponse updateUserUnit(String id, Integer unit) {
+    public UserResponse updateUserUnit(String id, UserUpdateUnitRequest unit) {
         Users users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("user not found"));
 
-        if (!unitRepository.existsById(unit)) {
+        if (!unitRepository.existsById(unit.getUnitId())) {
             throw new AppException(ErrorCode.UNIT_ID_NOT_EXISTED);
         }
-        users.setUnitId(unit);
+        users.setUnitId(unit.getUnitId());
         return userMapper.toUserResponse(userRepository.save(users));
+    }
+
+    public UserResponse updateUserName(String id, UserUpdateUsernameRequest request) {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+        if (userRepository.existsByUsername(request.getUsername())
+                && !user.getUsername().equals(request.getUsername())
+        ) {
+            throw new AppException(ErrorCode.USER_NAME_EXISTED);
+        }
+        userMapper.updateUserName(user, request);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public void deleteUser(String id) {

@@ -10,4 +10,8 @@ public interface UnitRepository extends JpaRepository<Unit, Integer> {
     @Override
     @NonNull
     Optional<Unit> findById(@NonNull Integer id);
+
+    Optional<Unit> findByName(@NonNull String name);
+
+    Boolean existsByName(@NonNull String name);
 }
