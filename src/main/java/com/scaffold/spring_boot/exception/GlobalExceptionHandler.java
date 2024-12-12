@@ -3,9 +3,11 @@ package com.scaffold.spring_boot.exception;
 
 import com.scaffold.spring_boot.dto.request.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,6 +56,20 @@ public class GlobalExceptionHandler {
         apiResponse.setMessage(errorCode.getMessage());
         // bad request
         apiResponse.setCode(errorCode.getCode());
-        return ResponseEntity.status(errorCode.getCode()).body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
+    }
+
+    //AccessDenied Exception
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException e) {
+        ErrorCode errorCode = ErrorCode.ACCESS_DENIED;
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setMessage(errorCode.getMessage());
+        apiResponse.setCode(errorCode.getCode());
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 }
