@@ -25,9 +25,6 @@ public class UserController {
     // create users api
     @PostMapping
     public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest userCreationRequest) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("id: {}", authentication.getName());
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.createUser(userCreationRequest));
         return apiResponse;
