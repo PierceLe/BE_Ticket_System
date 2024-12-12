@@ -54,6 +54,8 @@ public class GlobalExceptionHandler {
         apiResponse.setMessage(errorCode.getMessage());
         // bad request
         apiResponse.setCode(errorCode.getCode());
-        return ResponseEntity.status(errorCode.getCode()).body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 }
