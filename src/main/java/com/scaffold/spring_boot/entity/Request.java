@@ -50,6 +50,4 @@ public class Request {
     String assignedNote;
     @Column(name = "rejected_reason")
     String rejectedReason;
-
-
 }
