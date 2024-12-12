@@ -24,6 +24,7 @@ public enum ErrorCode {
     USER_NAME_EXISTED(400, "Username already existed"),
     UNIT_NAME_NOT_EXISTED(400, "Unit name is not existed"),
     UNIT_NAME_EXISTED(400, "Unit name already existed"),
+    INVALID_TOKEN(401, "Invalid token format. Expected 'Bearer <token>'")
     ;
     private final int code;
     private final String message;

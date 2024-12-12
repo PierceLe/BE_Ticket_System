@@ -52,7 +52,15 @@ public class AuthenticationService {
     }
 
     public IntrospectResponse introspect(IntrospectRequest introspectRequest) throws JOSEException, ParseException {
-        var token = introspectRequest.getToken();
+        var bearerToken = introspectRequest.getToken();
+
+        // Validate Bearer token format
+        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+
+        var token = bearerToken.substring(7); // Remove "Bearer " prefix
+
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
