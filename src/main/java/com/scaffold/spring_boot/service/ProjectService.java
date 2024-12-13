@@ -57,11 +57,11 @@ public class ProjectService {
         return modelMapper.map(project, ProjectResponse.class);
     }
 
-    public UnitResponse getProjectByName(String name) {
+    public ProjectResponse getProjectByName(String name) {
         Project project = projectRepository.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NAME_NOT_EXISTED));
 
-        return modelMapper.map(project, UnitResponse.class);
+        return modelMapper.map(project, ProjectResponse.class);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")

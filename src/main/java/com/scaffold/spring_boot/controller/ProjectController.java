@@ -1,9 +1,15 @@
 package com.scaffold.spring_boot.controller;
 
+import com.scaffold.spring_boot.dto.request.ApiResponse;
+import com.scaffold.spring_boot.dto.request.project.ProjectCreationRequest;
+import com.scaffold.spring_boot.dto.response.ProjectResponse;
 import com.scaffold.spring_boot.service.ProjectService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/projects")
@@ -11,5 +17,48 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProjectController {
     private final ProjectService projectService;
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
+    public ProjectResponse createProject(
+            @RequestBody ProjectCreationRequest request
+    ) {
+        return projectService.createProject(request);
+    }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
+    @GetMapping
+    public ApiResponse<List<ProjectResponse>> getAllProjects() {
+        return projectService.getAllProject();
+    }
+
+
+
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
+    @GetMapping("{id}")
+    public ProjectResponse getProjectById(@PathVariable @NonNull Integer id) {
+        return projectService.getProjectById(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
+    @GetMapping("{name}/name")
+    public ProjectResponse getProjectByName(@PathVariable @NonNull String  name) {
+        return projectService.getProjectByName(name);
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("{id}")
+    public ProjectResponse updateUnit(
+            @PathVariable @NonNull Integer id,
+            @RequestBody ProjectCreationRequest request
+    ) {
+        return projectService.updateProject(id, request);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("{id}")
+    public void deleteProject(@PathVariable @NonNull Integer id) {
+        projectService.deleteProject(id);
+    }
 }
