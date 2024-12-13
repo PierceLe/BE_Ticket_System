@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+    USER__NOT_EXISTED(400, "User is not exist", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_EXISTED(400, "User already existed", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_EMAIL_EXISTED(400, "User email already existed", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(401, "Unauthorized", HttpStatus.UNAUTHORIZED),

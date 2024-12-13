@@ -4,7 +4,9 @@ package com.scaffold.spring_boot.service;
 import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.user.UserCreationRequest;
 import com.scaffold.spring_boot.dto.request.user.*;
+import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.dto.response.UserResponse;
+import com.scaffold.spring_boot.entity.Unit;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;
 import com.scaffold.spring_boot.exception.AppException;
@@ -16,6 +18,7 @@ import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,6 +40,7 @@ public class UserService {
     private final UnitRepository unitRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     @Transactional
@@ -154,6 +158,19 @@ public class UserService {
                 () -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED)
                 );
         return userMapper.toUserResponse(user);
+    }
+
+    public UnitResponse getMyUnit() {
+        var context = SecurityContextHolder.getContext();
+        String id = context.getAuthentication().getName();
+
+        Users user = userRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.USER__NOT_EXISTED)
+        );
+        Integer unitId = user.getUnitId();
+        Unit unit = unitRepository.findById(unitId)
+                .orElseThrow(() -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
+        return modelMapper.map(unit, UnitResponse.class);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
