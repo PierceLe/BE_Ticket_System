@@ -165,7 +165,7 @@ public class UserService {
         String id = context.getAuthentication().getName();
 
         Users user = userRepository.findById(id).orElseThrow(
-                () -> new AppException(ErrorCode.USER__NOT_EXISTED)
+                () -> new AppException(ErrorCode.USER_NOT_EXISTED)
         );
         Integer unitId = user.getUnitId();
         Unit unit = unitRepository.findById(unitId)

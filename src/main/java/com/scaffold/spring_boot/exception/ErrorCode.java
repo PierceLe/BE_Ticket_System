@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    USER__NOT_EXISTED(400, "User is not exist", HttpStatus.INTERNAL_SERVER_ERROR),
+    PROJECT_NAME_EXISTED(400, "project name existed", HttpStatus.BAD_REQUEST),
+    USER_NOT_EXISTED(400, "User is not exist", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_EXISTED(400, "User already existed", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_EMAIL_EXISTED(400, "User email already existed", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(401, "Unauthorized", HttpStatus.UNAUTHORIZED),
@@ -24,6 +25,8 @@ public enum ErrorCode {
     UNIT_ID_NOT_EMPTY(400, "Unid id is empty", HttpStatus.BAD_REQUEST),
     ROLE_ID_NOT_EMPTY(400, "Role id is empty", HttpStatus.BAD_REQUEST),
     UNIT_ID_NOT_EXISTED(400, "unit id is not existed", HttpStatus.NOT_FOUND),
+    PROJECT_ID_NOT_EXISTED(400, "project id is not existed", HttpStatus.BAD_REQUEST),
+    PROJECT_NAME_NOT_EXISTED(400, "project name is not existed", HttpStatus.BAD_REQUEST),
     USER_NAME_EXISTED(400, "Username already existed", HttpStatus.CONFLICT),
     UNIT_NAME_NOT_EXISTED(400, "Unit name is not existed", HttpStatus.NOT_FOUND),
     UNIT_NAME_EXISTED(400, "Unit name already existed", HttpStatus.CONFLICT),
