@@ -49,7 +49,7 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("{id}")
-    public ProjectResponse updateUnit(
+    public ProjectResponse updateProject(
             @PathVariable @NonNull Integer id,
             @RequestBody ProjectCreationRequest request
     ) {
