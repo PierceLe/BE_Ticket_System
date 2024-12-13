@@ -7,6 +7,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.time.LocalDate;
 
 
 @ControllerAdvice
@@ -71,5 +74,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(errorCode.getStatusCode())
                 .body(apiResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        // Check if the error is specifically for `LocalDate` conversion
+        ex.getRequiredType();
+        if (ex.getRequiredType().equals(LocalDate.class)) {
+            ApiResponse<String> response = new ApiResponse<>();
+            response.setCode(400);
+            response.setMessage("Invalid date format for parameter '" + ex.getName() +
+                    "'. Expected format is 'YYYY-MM-DD'. Received value: '" + ex.getValue() + "'.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Generic response for other type mismatches
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setCode(400);
+        response.setMessage("Invalid value for parameter '" + ex.getName() + "'. Expected type: " + ex.getRequiredType());
+        return ResponseEntity.badRequest().body(response);
     }
 }

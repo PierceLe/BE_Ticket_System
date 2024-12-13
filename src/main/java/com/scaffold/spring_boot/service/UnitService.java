@@ -4,11 +4,15 @@ import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.unit.UnitCreationRequest;
 import com.scaffold.spring_boot.dto.response.UnitCreationResponse;
 import com.scaffold.spring_boot.dto.response.UnitResponse;
+import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Unit;
+import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UnitMapper;
+import com.scaffold.spring_boot.mapper.UserMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
+import com.scaffold.spring_boot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UnitService {
     private final UnitRepository unitRepository;
+    private final UserRepository userRepository;
     private final UnitMapper unitMapper;
+    private final UserMapper userMapper;
     private final ModelMapper modelMapper;
 
     public UnitCreationResponse createUnit(UnitCreationRequest request) {
@@ -28,7 +34,6 @@ public class UnitService {
         if (unitExist) {
             throw new AppException(ErrorCode.UNIT_EXISTED);
         }
-
         Unit unit = modelMapper.map(request, Unit.class);
         unitRepository.save(unit);
         return modelMapper.map(unit, UnitCreationResponse.class);
@@ -72,5 +77,10 @@ public class UnitService {
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public void deleteUnit(Integer id) {
         unitRepository.deleteById(id);
+    }
+
+
+    public List<UserResponse> getUsersInSpecficUnits(Integer unitId) {
+        return userMapper.toUserResponseList(userRepository.findByUnitId(unitId));
     }
 }

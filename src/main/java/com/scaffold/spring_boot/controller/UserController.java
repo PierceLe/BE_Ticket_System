@@ -3,16 +3,19 @@ package com.scaffold.spring_boot.controller;
 import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.user.UserCreationRequest;
 import com.scaffold.spring_boot.dto.request.user.*;
+import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -30,11 +33,6 @@ public class UserController {
         return apiResponse;
     }
 
-    // get all users api
-    @GetMapping
-    public ApiResponse<List<Users>> getAllUsers() {
-        return userService.getAllUsers();
-    }
 
     @GetMapping("/myInfo")
     public ApiResponse<UserResponse> getMyInfo() {
@@ -105,5 +103,44 @@ public class UserController {
             @PathVariable @NonNull String id
     ) {
         userService.deleteUser(id);
+    }
+
+    @GetMapping
+    public ApiResponse<List<UserResponse>> getSearchFilter(
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "unitId", required = false) Integer unitId,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "fullName", required = false) String fullName,
+            @RequestParam(value = "dob", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob
+    ) {
+        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.userSearchFilter(username, unitId, role, email, fullName, dob));
+        return apiResponse;
+    }
+
+    @PostMapping("/{id}/lock")
+    public ApiResponse<UserResponse> lockUser(
+        @PathVariable @NotNull String id
+    ) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.lockUser(id))
+                .build();
+    }
+
+    @PostMapping("/{id}/unlock")
+    public ApiResponse<UserResponse> unlockUser(
+            @PathVariable @NotNull String id
+    ) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.unlockUser(id))
+                .build();
+    }
+
+    @GetMapping("/myUnit")
+    public ApiResponse<UnitResponse> getMyUnit() {
+        return ApiResponse.<UnitResponse>builder()
+                .result(userService.getMyUnit())
+                .build();
     }
 }

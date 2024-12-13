@@ -8,6 +8,8 @@ import com.scaffold.spring_boot.entity.Users;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     Users toUser(UserCreationRequest request);
@@ -17,4 +19,6 @@ public interface UserMapper {
     void updateUserName(@MappingTarget Users user, UserUpdateUsernameRequest request);
 
     UserResponse toUserResponse(Users user);
+
+    List<UserResponse> toUserResponseList(List<Users> users);
 }
