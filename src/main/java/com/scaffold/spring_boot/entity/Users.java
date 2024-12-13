@@ -33,4 +33,5 @@ public class Users {
     @Column(name = "full_name")
     String fullName;
     LocalDate dob;
+    Boolean locked;
 }

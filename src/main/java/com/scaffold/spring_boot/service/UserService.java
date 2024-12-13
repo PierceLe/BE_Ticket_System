@@ -60,6 +60,7 @@ public class UserService {
         }
         user.setRole(role.name());
         user.setCreatedAt(LocalDate.now());
+        user.setLocked(false);
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -154,6 +155,8 @@ public class UserService {
                 );
         return userMapper.toUserResponse(user);
     }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public List<UserResponse> userSearchFilter(
             String username,
             Integer unitId,
@@ -174,5 +177,27 @@ public class UserService {
         return filteredUsers.stream()
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
+    }
+
+    public UserResponse lockUser(String id) {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
+
+        if (user.getLocked()) {
+            throw new AppException(ErrorCode.USER_HAS_BEEN_LOCKED);
+        }
+        user.setLocked(true);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    public UserResponse unlockUser(String id) {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
+
+        if (!user.getLocked()) {
+            throw new AppException(ErrorCode.USER_STILL_ACTIVE);
+        }
+        user.setLocked(false);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 }

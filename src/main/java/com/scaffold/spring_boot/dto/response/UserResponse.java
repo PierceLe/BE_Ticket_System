@@ -16,4 +16,5 @@ public class UserResponse {
     Integer unitId;
     String email;
     String role;
+    Boolean locked;
 }
