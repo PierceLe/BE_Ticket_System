@@ -12,6 +12,7 @@ import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UserMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +21,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -149,5 +153,26 @@ public class UserService {
                 () -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED)
                 );
         return userMapper.toUserResponse(user);
+    }
+    public List<UserResponse> userSearchFilter(
+            String username,
+            Integer unitId,
+            String role,
+            String email,
+            String fullName,
+            LocalDate dob
+    ) {
+        List<Users> filteredUsers = userRepository.findUsersByFilters(
+                username,
+                unitId,
+                role,
+                email,
+                fullName,
+                dob != null ? LocalDate.parse(dob.toString()) : null
+        );
+
+        return filteredUsers.stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
     }
 }

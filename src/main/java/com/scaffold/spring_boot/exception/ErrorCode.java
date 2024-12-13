@@ -28,7 +28,8 @@ public enum ErrorCode {
     UNIT_NAME_EXISTED(400, "Unit name already existed", HttpStatus.CONFLICT),
     INVALID_TOKEN(401, "Invalid token format. Expected 'Bearer <token>'", HttpStatus.UNAUTHORIZED),
     ACCESS_DENIED(403, "Access denied", HttpStatus.FORBIDDEN),
-    UNIT_EXISTED(400, "Unit already existed", HttpStatus.BAD_REQUEST)
+    UNIT_EXISTED(400, "Unit already existed", HttpStatus.BAD_REQUEST),
+    INVALID_DATETIME_FORMAT(400, "Invalid date format. Please use YYYY-MM-DD.", HttpStatus.BAD_REQUEST)
     ;
     private final int code;
     private final String message;
