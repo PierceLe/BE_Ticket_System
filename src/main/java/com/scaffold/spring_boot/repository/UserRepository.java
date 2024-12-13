@@ -8,12 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<Users, String> {
     Boolean existsByUsername(String username);
     Users findByUsername(String username);
     Boolean existsByEmail(String email);
+    List<Users> findByUnitId(Integer unitId);
 
     @Query("SELECT u FROM Users u WHERE " +
             "(:username IS NULL OR u.username LIKE %:username%) AND " +
