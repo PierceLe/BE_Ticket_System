@@ -28,7 +28,6 @@ public class UnitService {
         if (unitExist) {
             throw new AppException(ErrorCode.UNIT_EXISTED);
         }
-
         Unit unit = modelMapper.map(request, Unit.class);
         unitRepository.save(unit);
         return modelMapper.map(unit, UnitCreationResponse.class);
