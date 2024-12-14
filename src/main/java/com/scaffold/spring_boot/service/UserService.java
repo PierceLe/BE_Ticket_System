@@ -230,27 +230,33 @@ public class UserService {
         if (Objects.isNull(file) || file.isEmpty()) {
             throw new AppException(ErrorCode.FILE_EMPTY);
         }
-
         // Validate file type
         String fileType = file.getContentType();
         if (Objects.isNull(fileType) || !isValidFileType(fileType)) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE);
         }
-
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
+        // Check if the user already has an avatar URL
+        if (Objects.nonNull(user.getAvatarUrl())) {
+            String oldFilePath = user.getAvatarUrl();
+            // Delete the old file
+            File oldFile = new File(oldFilePath);
+            if (oldFile.exists() && oldFile.isFile()) {
+                if (!oldFile.delete()) {
+                    throw new AppException(ErrorCode.DELETE_AVATAR_ERROR);
+                }
+            }
+        }
         // Define file path
         String filePath = FILE_PATH + file.getOriginalFilename();
         user.setAvatarUrl(filePath);
-
         try {
             // Save the file to the server
             file.transferTo(new File(filePath));
         } catch (IOException e) {
             throw new AppException(ErrorCode.UPLOAD_AVATAR_ERROR);
         }
-
         // Save user entity and return response
         return modelMapper.map(userRepository.save(user), UserResponse.class);
     }

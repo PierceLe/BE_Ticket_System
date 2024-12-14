@@ -39,6 +39,7 @@ public enum ErrorCode {
     UPLOAD_AVATAR_ERROR(400, "upload avatar error", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_EMPTY(400, "File is empty", HttpStatus.BAD_REQUEST),
     INVALID_FILE_TYPE(400, "Invalid file type", HttpStatus.BAD_REQUEST),
+    DELETE_AVATAR_ERROR(400, "Delete avatar error", HttpStatus.BAD_REQUEST),
     ;
     private final int code;
     private final String message;
