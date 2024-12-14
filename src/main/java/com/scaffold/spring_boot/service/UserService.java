@@ -79,9 +79,10 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
-    public Users getUserById(String id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("user not found"));
+    public UserResponse getUserById(String id) {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return userMapper.toUserResponse(user);
     }
 
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
