@@ -245,7 +245,7 @@ public class UserService {
             }
         }
         // Define file path
-        String filePath = FILE_PATH + file.getOriginalFilename();
+        String filePath = FILE_PATH + user.getUsername() + "_" + file.getOriginalFilename();
         user.setAvatarUrl(filePath);
         try {
             // Save the file to the server
