@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,7 +34,7 @@ public class UserController {
         return apiResponse;
     }
 
-
+    // get user api
     @GetMapping("/myInfo")
     public ApiResponse<UserResponse> getMyInfo() {
         return ApiResponse.<UserResponse>builder()
@@ -105,6 +106,7 @@ public class UserController {
         userService.deleteUser(id);
     }
 
+    // get users with filter
     @GetMapping
     public ApiResponse<List<UserResponse>> getSearchFilter(
             @RequestParam(value = "username", required = false) String username,
@@ -119,6 +121,7 @@ public class UserController {
         return apiResponse;
     }
 
+    // lock user account
     @PostMapping("/{id}/lock")
     public ApiResponse<UserResponse> lockUser(
         @PathVariable @NotNull String id
@@ -128,6 +131,7 @@ public class UserController {
                 .build();
     }
 
+    // unlock user account
     @PostMapping("/{id}/unlock")
     public ApiResponse<UserResponse> unlockUser(
             @PathVariable @NotNull String id
@@ -137,10 +141,34 @@ public class UserController {
                 .build();
     }
 
+    // get user's unit
     @GetMapping("/myUnit")
     public ApiResponse<UnitResponse> getMyUnit() {
         return ApiResponse.<UnitResponse>builder()
                 .result(userService.getMyUnit())
+                .build();
+    }
+
+    // update user's avatar
+    @PutMapping("{id}/avatar")
+    public ApiResponse<UserResponse> userUpdateUserAvatar(
+            @PathVariable @NonNull String id,
+            @RequestParam("file") @NonNull MultipartFile file
+    ) {
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.updateUserAvatar(id, file))
+                .build();
+    }
+
+    // update user's avatar
+    @DeleteMapping("{id}/avatar")
+    public ApiResponse<UserResponse> userDeleteAvatar(
+            @PathVariable @NonNull String id
+    ) {
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.deleteUserAvatar(id))
                 .build();
     }
 }

@@ -14,9 +14,9 @@ import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.mapper.UserMapper;
 import com.scaffold.spring_boot.repository.UnitRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
-import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,10 +24,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
+    @NonFinal
+    private static final String FILE_PATH = System.getProperty("user.dir") + "/src/main/resources/avatars/";
     private final UserRepository userRepository;
     private final UnitRepository unitRepository;
     private final UserMapper userMapper;
@@ -198,7 +201,7 @@ public class UserService {
 
     public UserResponse lockUser(String id) {
         Users user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (user.getLocked()) {
             throw new AppException(ErrorCode.USER_HAS_BEEN_LOCKED);
@@ -216,5 +219,66 @@ public class UserService {
         }
         user.setLocked(false);
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    public UserResponse updateUserAvatar(String id, MultipartFile file) {
+        // Check for null file or empty file
+        if (Objects.isNull(file) || file.isEmpty()) {
+            throw new AppException(ErrorCode.FILE_EMPTY);
+        }
+        // Validate file type
+        String fileType = file.getContentType();
+        if (Objects.isNull(fileType) || !isValidFileType(fileType)) {
+            throw new AppException(ErrorCode.INVALID_FILE_TYPE);
+        }
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        // Check if the user already has an avatar URL
+        if (Objects.nonNull(user.getAvatarUrl())) {
+            String oldFilePath = user.getAvatarUrl();
+            // Delete the old file
+            File oldFile = new File(oldFilePath);
+            if (oldFile.exists() && oldFile.isFile()) {
+                if (!oldFile.delete()) {
+                    throw new AppException(ErrorCode.DELETE_AVATAR_ERROR);
+                }
+            }
+        }
+        // Define file path
+        String filePath = FILE_PATH + user.getUsername() + "_" + file.getOriginalFilename();
+        user.setAvatarUrl(filePath);
+        try {
+            // Save the file to the server
+            file.transferTo(new File(filePath));
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.UPLOAD_AVATAR_ERROR);
+        }
+        // Save user entity and return response
+        return modelMapper.map(userRepository.save(user), UserResponse.class);
+    }
+
+    public UserResponse deleteUserAvatar(String id) {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        // Check if the user already has an avatar URL
+        if (Objects.nonNull(user.getAvatarUrl())) {
+            String oldFilePath = user.getAvatarUrl();
+            // Delete the old file
+            File oldFile = new File(oldFilePath);
+            if (oldFile.exists() && oldFile.isFile()) {
+                if (!oldFile.delete()) {
+                    throw new AppException(ErrorCode.DELETE_AVATAR_ERROR);
+                }
+                user.setAvatarUrl(null);
+                return modelMapper.map(userRepository.save(user), UserResponse.class);
+            }
+        }
+        throw new AppException(ErrorCode.AVATAR_ALREADY_DEFAULT);
+    }
+
+    private boolean isValidFileType(String fileType) {
+        return fileType.equalsIgnoreCase("image/jpeg") || // For jpg and jpeg
+                fileType.equalsIgnoreCase("image/png") ||
+                fileType.equalsIgnoreCase("image/svg+xml");
     }
 }
