@@ -7,4 +7,4 @@ mvnw
 mvnw.cmd
 spring-boot.iml
 target/
-src/main/resources/avatars/
+src/main/resources/avatars/**
