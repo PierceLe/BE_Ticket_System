@@ -160,4 +160,15 @@ public class UserController {
                 .result(userService.updateUserAvatar(id, file))
                 .build();
     }
+
+    // update user's avatar
+    @DeleteMapping("{id}/avatar")
+    public ApiResponse<UserResponse> userDeleteAvatar(
+            @PathVariable @NonNull String id
+    ) {
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.deleteUserAvatar(id))
+                .build();
+    }
 }
