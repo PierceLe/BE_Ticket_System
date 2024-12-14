@@ -11,8 +11,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserUpdateRequest {
     @Nullable
-    String avatarUrl;
-    @Nullable
     String description;
     @Nullable
     String fullName;

@@ -6,6 +6,7 @@ import com.scaffold.spring_boot.dto.request.user.UserCreationRequest;
 import com.scaffold.spring_boot.dto.request.user.*;
 import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.dto.response.UserResponse;
+import com.scaffold.spring_boot.entity.FileData;
 import com.scaffold.spring_boot.entity.Unit;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Role;
@@ -17,6 +18,7 @@ import com.scaffold.spring_boot.repository.UserRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +27,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -36,6 +41,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
+    @NonFinal
+    private static final String FILE_PATH = System.getProperty("user.dir") + "/src/main/resources/avatars/";
     private final UserRepository userRepository;
     private final UnitRepository unitRepository;
     private final UserMapper userMapper;
@@ -198,7 +205,7 @@ public class UserService {
 
     public UserResponse lockUser(String id) {
         Users user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.UNIT_ID_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (user.getLocked()) {
             throw new AppException(ErrorCode.USER_HAS_BEEN_LOCKED);
@@ -216,5 +223,42 @@ public class UserService {
         }
         user.setLocked(false);
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    public UserResponse updateUserAvatar(String id, MultipartFile file) {
+        // Check for null file or empty file
+        if (Objects.isNull(file) || file.isEmpty()) {
+            throw new AppException(ErrorCode.FILE_EMPTY);
+        }
+
+        // Validate file type
+        String fileType = file.getContentType();
+        if (Objects.isNull(fileType) || !isValidFileType(fileType)) {
+            throw new AppException(ErrorCode.INVALID_FILE_TYPE);
+        }
+
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        // Define file path
+        String filePath = FILE_PATH + file.getOriginalFilename();
+        user.setAvatarUrl(filePath);
+
+        try {
+            // Save the file to the server
+            file.transferTo(new File(filePath));
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.UPLOAD_AVATAR_ERROR);
+        }
+
+        // Save user entity and return response
+        return modelMapper.map(userRepository.save(user), UserResponse.class);
+    }
+
+
+    private boolean isValidFileType(String fileType) {
+        return fileType.equalsIgnoreCase("image/jpeg") || // For jpg and jpeg
+                fileType.equalsIgnoreCase("image/png") ||
+                fileType.equalsIgnoreCase("image/svg+xml");
     }
 }

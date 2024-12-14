@@ -36,6 +36,9 @@ public enum ErrorCode {
     INVALID_DATETIME_FORMAT(400, "Invalid date format. Please use YYYY-MM-DD.", HttpStatus.BAD_REQUEST),
     USER_HAS_BEEN_LOCKED(400, "User has been locked", HttpStatus.CONFLICT),
     USER_STILL_ACTIVE(400, "User still active", HttpStatus.CONFLICT),
+    UPLOAD_AVATAR_ERROR(400, "upload avatar error", HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_EMPTY(400, "File is empty", HttpStatus.BAD_REQUEST),
+    INVALID_FILE_TYPE(400, "Invalid file type", HttpStatus.BAD_REQUEST),
     ;
     private final int code;
     private final String message;
