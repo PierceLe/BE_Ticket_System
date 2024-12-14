@@ -221,6 +221,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
     public UserResponse updateUserAvatar(String id, MultipartFile file) {
         // Check for null file or empty file
         if (Objects.isNull(file) || file.isEmpty()) {
@@ -257,6 +258,7 @@ public class UserService {
         return modelMapper.map(userRepository.save(user), UserResponse.class);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.name")
     public UserResponse deleteUserAvatar(String id) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
