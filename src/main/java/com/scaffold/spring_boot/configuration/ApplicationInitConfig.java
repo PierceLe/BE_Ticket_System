@@ -41,6 +41,7 @@ public class ApplicationInitConfig {
                         .email("hale0087@uni.sydney.edu.au")
                         .description("Im the boss of this system")
                         .fullName("Pierce Le")
+                        .locked(false)
                         .unitId(1)
                         .build();
                 userRepository.save(user);
