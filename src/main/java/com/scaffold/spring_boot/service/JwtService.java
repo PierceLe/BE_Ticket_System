@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -63,7 +64,6 @@ public class JwtService {
             return signedJWT.verify(verifier) && expiryTime.after(new Date())
                     && !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
         } catch (JOSEException | ParseException e) {
-//            log.error(e.getMessage());
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
     }
