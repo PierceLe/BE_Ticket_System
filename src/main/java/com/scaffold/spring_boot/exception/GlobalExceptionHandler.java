@@ -2,6 +2,8 @@ package com.scaffold.spring_boot.exception;
 
 
 import com.scaffold.spring_boot.dto.request.ApiResponse;
+import jakarta.validation.ConstraintViolation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +15,7 @@ import java.time.LocalDate;
 
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     //Exception
     @ExceptionHandler(value = Exception.class)
@@ -40,6 +43,18 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
         try {
             errorCode = ErrorCode.valueOf(enumKey);
+            var constraintViolation = e.getBindingResult().getAllErrors()
+                    .stream()
+                    .filter(error -> {
+                        error.unwrap(ConstraintViolation.class);
+                        return true;
+                    })
+                    .findFirst()
+                    .map(error -> error.unwrap(ConstraintViolation.class))
+                    .orElseThrow(() -> new RuntimeException("Constraint violation not found"));
+
+            var atributes = constraintViolation.getConstraintDescriptor().getAttributes();
+
         }
         catch (IllegalArgumentException exception) {
             System.out.println(enumKey);

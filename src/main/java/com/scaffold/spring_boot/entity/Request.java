@@ -43,7 +43,8 @@ public class Request {
     @Column(name = "cause_details")
     String causeDetails;
     String description;
-    String file;
+    @Column(name = "attached_file")
+    String attachedFile;
     @Column(name = "assigned_note")
     String assignedNote;
     @Column(name = "rejected_reason")
