@@ -39,7 +39,7 @@ public class JwtService {
                     .subject(userId)
                     .issuer("hale0087@uni.sydney.edu.au")
                     .issueTime(new Date())
-                    .expirationTime(Date.from(Instant.now().plus(48, ChronoUnit.HOURS)))
+                    .expirationTime(Date.from(Instant.now().plus(24, ChronoUnit.HOURS)))
                     .claim("scope", role)
                     .jwtID(UUID.randomUUID().toString())
                     .build();
