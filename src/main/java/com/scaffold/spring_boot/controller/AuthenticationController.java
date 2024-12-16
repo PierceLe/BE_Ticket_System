@@ -11,6 +11,7 @@ import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -30,12 +31,8 @@ public class AuthenticationController {
 
     @PostMapping("/introspect")
     public ApiResponse<IntrospectResponse> authenticateJwt(@RequestHeader("Authorization") @Valid IntrospectRequest request) {
-        try {
             return ApiResponse.<IntrospectResponse>builder()
                     .result(authenticationService.introspect(request))
                     .build();
-        } catch (JOSEException | ParseException e) {
-            throw new AppException(ErrorCode.INVALID_JWT);
-        }
     }
 }

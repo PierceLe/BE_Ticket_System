@@ -1,10 +1,5 @@
 package com.scaffold.spring_boot.service;
 
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import com.scaffold.spring_boot.dto.request.AuthenticationRequest;
 import com.scaffold.spring_boot.dto.request.IntrospectRequest;
 import com.scaffold.spring_boot.dto.response.AuthenticationResponse;
@@ -14,16 +9,10 @@ import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.NonFinal;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Objects;
 
 @Service
@@ -31,69 +20,49 @@ import java.util.Objects;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-
-    @NonFinal
-    @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
+    private final JwtService jwtService;
+    private final BruteForceProtectionService bruteForceProtectionService;
 
     public AuthenticationResponse authenticateUser(AuthenticationRequest authenticationRequest) {
+        String username = authenticationRequest.getUsername();
+        // Check if user is blocked
+        if (bruteForceProtectionService.isBlocked(username)) {
+            throw new AppException(ErrorCode.ACCOUNT_LOCKED);
+        }
         Users user = userRepository.findByUsername(authenticationRequest.getUsername());
         if (Objects.isNull(user)) {
+            bruteForceProtectionService.loginFailed(username);
             throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (!passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+            bruteForceProtectionService.loginFailed(username);
             throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
-        var token = generateToken(user);
+        bruteForceProtectionService.loginSucceeded(username);
+        // Generate token using JwtService
+        String token = jwtService.generateToken(user.getId(), user.getRole());
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
     }
 
-    public IntrospectResponse introspect(IntrospectRequest introspectRequest) throws JOSEException, ParseException {
-        var bearerToken = introspectRequest.getToken();
+    public IntrospectResponse introspect(IntrospectRequest introspectRequest) {
+        String bearerToken = introspectRequest.getToken();
 
         // Validate Bearer token format
         if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
 
-        var token = bearerToken.substring(7); // Remove "Bearer " prefix
+        String token = bearerToken.substring(7); // Remove "Bearer " prefix
 
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        var verified = signedJWT.verify(verifier);
+        boolean isValid = jwtService.verifyToken(token);
 
         return IntrospectResponse.builder()
-                .isValid(verified && expiryTime.after(new Date()))
+                .isValid(isValid)
                 .build();
-    }
-
-    private String generateToken(Users user) {
-        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
-
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getId())
-                .issuer("hale0087@uni.sydney.edu.au")
-                .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now().plus(48, ChronoUnit.HOURS).toEpochMilli()
-                ))
-                .claim("scope", user.getRole())
-                .build();
-
-        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
-        try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            return jwsObject.serialize();
-        } catch (JOSEException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

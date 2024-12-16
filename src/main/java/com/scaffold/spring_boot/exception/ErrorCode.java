@@ -41,6 +41,8 @@ public enum ErrorCode {
     INVALID_FILE_TYPE(400, "Invalid file type", HttpStatus.BAD_REQUEST),
     DELETE_AVATAR_ERROR(400, "Delete avatar error", HttpStatus.BAD_REQUEST),
     AVATAR_ALREADY_DEFAULT(400, "Avatar already default", HttpStatus.CONFLICT),
+    TOKEN_GENERATION_FAILED(400, "Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    ACCOUNT_LOCKED(400, "Account locked", HttpStatus.CONFLICT),
     ;
     private final int code;
     private final String message;
