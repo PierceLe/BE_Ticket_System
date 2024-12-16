@@ -5,7 +5,6 @@ import com.scaffold.spring_boot.dto.request.user.UserCreationRequest;
 import com.scaffold.spring_boot.dto.request.user.*;
 import com.scaffold.spring_boot.dto.response.UnitResponse;
 import com.scaffold.spring_boot.dto.response.UserResponse;
-import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -44,47 +43,62 @@ public class UserController {
 
     // get specific user api
     @GetMapping("/{id}")
-    public Users getUserById(
+    public ApiResponse<UserResponse>getUserById(
             @PathVariable @NonNull String id
     ) {
-        return userService.getUserById(id);
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.getUserById(id))
+                .build();
     }
 
 
     // update user api
     @PutMapping("/{id}")
-    public UserResponse updateUser(
+    public ApiResponse<UserResponse> updateUser(
             @PathVariable @NonNull String id,
             @RequestBody UserUpdateRequest userUpdateRequest
     ) {
-        return userService.updateUser(id, userUpdateRequest);
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.updateUser(id, userUpdateRequest))
+                .build();
     }
 
     // update user password api
     @PutMapping("/{id}/password")
-    public UserResponse userUpdatePassword(
+    public ApiResponse<UserResponse> userUpdatePassword(
             @PathVariable @NonNull String id,
             @RequestBody UserUpdatePasswordRequest userUpdateRequest
     ) {
-        return userService.updateUserPassword(id, userUpdateRequest);
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.updateUserPassword(id, userUpdateRequest))
+                .build();
     }
 
     // update user role
     @PutMapping("/{id}/role")
-    public UserResponse userUpdatePassword(
+    public ApiResponse<UserResponse> userUpdateRole(
             @PathVariable @NonNull String id,
             @RequestBody UserUpdateRoleRequest userUpdateRequest
     ) {
-        return userService.updateUserRole(id, userUpdateRequest);
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.updateUserRole(id, userUpdateRequest))
+                .build();
     }
 
     // update user unit
     @PutMapping("/{id}/unit")
-    public UserResponse userUpdateUnit(
+    public ApiResponse<UserResponse> userUpdateUnit(
             @PathVariable @NonNull String id,
             @RequestBody UserUpdateUnitRequest request
     ) {
-        return userService.updateUserUnit(id, request);
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.updateUserUnit(id, request))
+                .build();
     }
 
 
