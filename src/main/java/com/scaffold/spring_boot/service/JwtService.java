@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class JwtService {
                     .issueTime(new Date())
                     .expirationTime(Date.from(Instant.now().plus(48, ChronoUnit.HOURS)))
                     .claim("scope", role)
+                    .jwtID(UUID.randomUUID().toString())
                     .build();
 
             // Sign the token
