@@ -13,6 +13,7 @@ import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.InvalidatedTokenRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
 
     private final UserRepository userRepository;
@@ -57,20 +59,17 @@ public class AuthenticationService {
     }
 
     public IntrospectResponse introspect(IntrospectRequest introspectRequest) {
-        String bearerToken = introspectRequest.getToken();
-
-        // Validate Bearer token format
-        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
+        var token = introspectRequest.getToken();
+        boolean isValid = true;
+        try {
+            if (!jwtService.verifyToken(token))
+                isValid = false;
         }
-
-        String token = bearerToken.substring(7); // Remove "Bearer " prefix
-
-        boolean isValid = jwtService.verifyToken(token);
-
-        return IntrospectResponse.builder()
-                .isValid(isValid)
-                .build();
+        catch (AppException e) {
+            log.error(e.getMessage());
+            isValid = false;
+        }
+        return IntrospectResponse.builder().isValid(isValid).build();
     }
 
     public void logout(LogoutRequest request) {

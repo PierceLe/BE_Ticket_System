@@ -9,6 +9,7 @@ import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.InvalidatedTokenRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JwtService {
     private final InvalidatedTokenRepository invalidatedTokenRepository;
 
@@ -61,6 +63,7 @@ public class JwtService {
             return signedJWT.verify(verifier) && expiryTime.after(new Date())
                     && !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
         } catch (JOSEException | ParseException e) {
+//            log.error(e.getMessage());
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
     }
