@@ -7,6 +7,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
+import com.scaffold.spring_boot.repository.InvalidatedTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Value("${jwt.signerKey}")
     private String SIGNER_KEY;
@@ -55,7 +57,9 @@ public class JwtService {
             JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
             Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-            return signedJWT.verify(verifier) && expiryTime.after(new Date());
+
+            return signedJWT.verify(verifier) && expiryTime.after(new Date())
+                    && !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
         } catch (JOSEException | ParseException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
