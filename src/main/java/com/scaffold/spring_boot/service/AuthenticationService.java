@@ -76,7 +76,7 @@ public class AuthenticationService {
     public void logout(LogoutRequest request) {
         if (jwtService.verifyToken(request.getToken())) {
             try {
-                var signedToken = SignedJWT.parse(request.getToken());
+                var signedToken = SignedJWT.parse(request.getToken().substring(7));
                 String jit = signedToken.getJWTClaimsSet().getJWTID();
                 Date expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
                 InvalidatedToken token = InvalidatedToken.builder()
@@ -96,7 +96,7 @@ public class AuthenticationService {
         // - check the expiration date of token
         if (jwtService.verifyToken(request.getToken())) {
             try {
-                var signedJWT = SignedJWT.parse(request.getToken());
+                var signedJWT = SignedJWT.parse(request.getToken().substring(7));
                 var jit = signedJWT.getJWTClaimsSet().getJWTID();
                 var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
                 InvalidatedToken invalidatedToken = InvalidatedToken.builder()

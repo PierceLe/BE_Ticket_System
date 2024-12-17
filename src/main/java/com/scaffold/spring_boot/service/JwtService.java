@@ -57,6 +57,7 @@ public class JwtService {
     public boolean verifyToken(String bearerToken) {
         try {
             // Validate Bearer token format
+            log.info("Verifying token: {}", bearerToken);
             if (Objects.isNull(bearerToken) || !bearerToken.startsWith("Bearer ")) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
             }

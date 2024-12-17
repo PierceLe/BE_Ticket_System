@@ -6,6 +6,7 @@ import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomJwtDecoder implements JwtDecoder {
 
     @Value("${jwt.signerKey}")
@@ -31,7 +33,7 @@ public class CustomJwtDecoder implements JwtDecoder {
 
     @Override
     public Jwt decode(String token) throws JwtException {
-        IntrospectResponse introspectResponse = authenticationService.introspect(IntrospectRequest.builder().token(token).build());
+        IntrospectResponse introspectResponse = authenticationService.introspect(IntrospectRequest.builder().token("Bearer " + token).build());
         if (!introspectResponse.getIsValid()) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
