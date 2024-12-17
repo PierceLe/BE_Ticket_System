@@ -1,6 +1,9 @@
 package com.scaffold.spring_boot.configuration;
 
 import com.scaffold.spring_boot.dto.request.IntrospectRequest;
+import com.scaffold.spring_boot.dto.response.IntrospectResponse;
+import com.scaffold.spring_boot.exception.AppException;
+import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +31,10 @@ public class CustomJwtDecoder implements JwtDecoder {
 
     @Override
     public Jwt decode(String token) throws JwtException {
-        authenticationService.introspect(IntrospectRequest.builder().token(token).build());
-
+        IntrospectResponse introspectResponse = authenticationService.introspect(IntrospectRequest.builder().token(token).build());
+        if (!introspectResponse.getIsValid()) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
         if (Objects.isNull(nimbusJwtDecoder)) {
             SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS256");
             nimbusJwtDecoder = NimbusJwtDecoder.withSecretKey(secretKeySpec)

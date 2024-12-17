@@ -54,8 +54,13 @@ public class JwtService {
         }
     }
 
-    public boolean verifyToken(String token) {
+    public boolean verifyToken(String bearerToken) {
         try {
+            // Validate Bearer token format
+            if (Objects.isNull(bearerToken) || !bearerToken.startsWith("Bearer ")) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
+            var token = bearerToken.substring(7);
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -64,6 +69,7 @@ public class JwtService {
             return signedJWT.verify(verifier) && expiryTime.after(new Date())
                     && !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
         } catch (JOSEException | ParseException e) {
+            log.error(e.getMessage());
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
     }
