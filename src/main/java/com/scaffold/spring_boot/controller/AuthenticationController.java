@@ -1,10 +1,7 @@
 package com.scaffold.spring_boot.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.scaffold.spring_boot.dto.request.ApiResponse;
-import com.scaffold.spring_boot.dto.request.AuthenticationRequest;
-import com.scaffold.spring_boot.dto.request.IntrospectRequest;
-import com.scaffold.spring_boot.dto.request.LogoutRequest;
+import com.scaffold.spring_boot.dto.request.*;
 import com.scaffold.spring_boot.dto.response.AuthenticationResponse;
 import com.scaffold.spring_boot.dto.response.IntrospectResponse;
 import com.scaffold.spring_boot.exception.AppException;
@@ -41,6 +38,13 @@ public class AuthenticationController {
     public ApiResponse<Void> authenticateJwt(@RequestHeader("Authorization") @Valid LogoutRequest request) {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> refreshAuthentication(@RequestHeader("Authorization") @Valid RefreshRequest request) {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationService.refreshToken(request))
                 .build();
     }
 }

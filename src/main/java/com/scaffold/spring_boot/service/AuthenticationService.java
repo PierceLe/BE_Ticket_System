@@ -4,6 +4,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.scaffold.spring_boot.dto.request.AuthenticationRequest;
 import com.scaffold.spring_boot.dto.request.IntrospectRequest;
 import com.scaffold.spring_boot.dto.request.LogoutRequest;
+import com.scaffold.spring_boot.dto.request.RefreshRequest;
 import com.scaffold.spring_boot.dto.response.AuthenticationResponse;
 import com.scaffold.spring_boot.dto.response.IntrospectResponse;
 import com.scaffold.spring_boot.entity.InvalidatedToken;
@@ -91,8 +92,32 @@ public class AuthenticationService {
         }
     }
 
-    public Object refreshToken(Object request) {
+    public AuthenticationResponse refreshToken(RefreshRequest request) {
+        // - check the expiration date of token
+        if (jwtService.verifyToken(request.getToken())) {
+            try {
+                var signedJWT = SignedJWT.parse(request.getToken());
+                var jit = signedJWT.getJWTClaimsSet().getJWTID();
+                var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+                InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                        .id(jit)
+                        .expiryTime(expiryTime)
+                        .build();
+                invalidatedTokenRepository.save(invalidatedToken);
+                var userId = signedJWT.getJWTClaimsSet().getSubject();
+                var user = userRepository.findById(userId)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
+                var token = jwtService.generateToken(userId, user.getRole());
+                return AuthenticationResponse.builder()
+                        .token(token)
+                        .build();
+
+            } catch (ParseException e) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
+        }
+        throw new AppException(ErrorCode.INVALID_TOKEN);
     }
 
 }
