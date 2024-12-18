@@ -1,5 +1,13 @@
 package com.scaffold.spring_boot.service;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Objects;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.nimbusds.jwt.SignedJWT;
 import com.scaffold.spring_boot.dto.request.AuthenticationRequest;
 import com.scaffold.spring_boot.dto.request.IntrospectRequest;
@@ -13,16 +21,9 @@ import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.InvalidatedTokenRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -54,19 +55,15 @@ public class AuthenticationService {
         // Generate token using JwtService
         String token = jwtService.generateToken(user.getId(), user.getRole());
 
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+        return AuthenticationResponse.builder().token(token).build();
     }
 
     public IntrospectResponse introspect(IntrospectRequest introspectRequest) {
         var token = introspectRequest.getToken();
         boolean isValid = true;
         try {
-            if (!jwtService.verifyToken(token, false))
-                isValid = false;
-        }
-        catch (AppException e) {
+            if (!jwtService.verifyToken(token, false)) isValid = false;
+        } catch (AppException e) {
             log.error(e.getMessage());
             isValid = false;
         }
@@ -86,12 +83,9 @@ public class AuthenticationService {
                 invalidatedTokenRepository.save(token);
             } catch (ParseException e) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
-            }
-            catch (AppException e) {
+            } catch (AppException e) {
                 log.error(e.getMessage());
             }
-
-
         }
     }
 
@@ -108,13 +102,11 @@ public class AuthenticationService {
                         .build();
                 invalidatedTokenRepository.save(invalidatedToken);
                 var userId = signedJWT.getJWTClaimsSet().getSubject();
-                var user = userRepository.findById(userId)
-                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                var user =
+                        userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
                 var token = jwtService.generateToken(userId, user.getRole());
-                return AuthenticationResponse.builder()
-                        .token(token)
-                        .build();
+                return AuthenticationResponse.builder().token(token).build();
 
             } catch (ParseException e) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
@@ -122,5 +114,4 @@ public class AuthenticationService {
         }
         throw new AppException(ErrorCode.INVALID_TOKEN);
     }
-
 }

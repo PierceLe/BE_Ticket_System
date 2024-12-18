@@ -1,14 +1,17 @@
 package com.scaffold.spring_boot.controller;
 
+import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
 import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.project.ProjectCreationRequest;
 import com.scaffold.spring_boot.dto.response.ProjectResponse;
 import com.scaffold.spring_boot.service.ProjectService;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/projects")
@@ -18,9 +21,7 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ProjectResponse createProject(
-            @RequestBody ProjectCreationRequest request
-    ) {
+    public ProjectResponse createProject(@RequestBody ProjectCreationRequest request) {
         return projectService.createProject(request);
     }
 
@@ -30,9 +31,6 @@ public class ProjectController {
         return projectService.getAllProject();
     }
 
-
-
-
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     @GetMapping("{id}")
     public ProjectResponse getProjectById(@PathVariable @NonNull Integer id) {
@@ -41,17 +39,14 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     @GetMapping("{name}/name")
-    public ProjectResponse getProjectByName(@PathVariable @NonNull String  name) {
+    public ProjectResponse getProjectByName(@PathVariable @NonNull String name) {
         return projectService.getProjectByName(name);
     }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("{id}")
     public ProjectResponse updateProject(
-            @PathVariable @NonNull Integer id,
-            @RequestBody ProjectCreationRequest request
-    ) {
+            @PathVariable @NonNull Integer id, @RequestBody ProjectCreationRequest request) {
         return projectService.updateProject(id, request);
     }
 
@@ -61,14 +56,10 @@ public class ProjectController {
         projectService.deleteProject(id);
     }
 
-
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/requests")
     public ApiResponse<List<ProjectResponse>> searchRequestsOfSpecificProject(
-            @PathVariable @NonNull Integer id,
-            @RequestParam(value = "username", required = false) String username
-    ) {
-        return ApiResponse.<List<ProjectResponse>>builder()
-                .build();
+            @PathVariable @NonNull Integer id, @RequestParam(value = "username", required = false) String username) {
+        return ApiResponse.<List<ProjectResponse>>builder().build();
     }
 }

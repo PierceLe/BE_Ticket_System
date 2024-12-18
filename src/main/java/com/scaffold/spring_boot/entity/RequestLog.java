@@ -1,10 +1,11 @@
 package com.scaffold.spring_boot.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -17,11 +18,15 @@ public class RequestLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
+
     @Column(name = "request_id")
     Integer requestId;
+
     String status;
+
     @Column(name = "created_at")
     LocalDateTime createAt;
+
     @Column(name = "user_id")
     Integer userId;
 }

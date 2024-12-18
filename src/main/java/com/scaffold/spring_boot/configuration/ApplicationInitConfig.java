@@ -1,12 +1,7 @@
 package com.scaffold.spring_boot.configuration;
 
-import com.scaffold.spring_boot.entity.Unit;
-import com.scaffold.spring_boot.entity.Users;
-import com.scaffold.spring_boot.enums.Role;
-import com.scaffold.spring_boot.repository.UnitRepository;
-import com.scaffold.spring_boot.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.ApplicationRunner;
@@ -14,21 +9,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
+import com.scaffold.spring_boot.entity.Unit;
+import com.scaffold.spring_boot.entity.Users;
+import com.scaffold.spring_boot.enums.Role;
+import com.scaffold.spring_boot.repository.UnitRepository;
+import com.scaffold.spring_boot.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
 public class ApplicationInitConfig {
     private final PasswordEncoder passwordEncoder;
+
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository, UnitRepository unitRepository) {
         return args -> {
             if (!unitRepository.existsById(1)) {
-                Unit units = Unit.builder()
-                        .name("Director")
-                        .build();
+                Unit units = Unit.builder().name("Director").build();
                 unitRepository.save(units);
             }
             if (!userRepository.existsByUsername("admin")) {
@@ -53,8 +53,7 @@ public class ApplicationInitConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STANDARD);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
         return modelMapper;
     }
 }

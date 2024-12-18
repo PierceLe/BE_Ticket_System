@@ -1,5 +1,12 @@
 package com.scaffold.spring_boot.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.scaffold.spring_boot.dto.request.ApiResponse;
 import com.scaffold.spring_boot.dto.request.project.ProjectCreationRequest;
 import com.scaffold.spring_boot.dto.response.ProjectResponse;
@@ -7,12 +14,8 @@ import com.scaffold.spring_boot.entity.Project;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.ProjectRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,14 +48,15 @@ public class ProjectService {
     }
 
     public ProjectResponse getProjectById(Integer id) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() ->  new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED));
+        Project project =
+                projectRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED));
 
         return modelMapper.map(project, ProjectResponse.class);
     }
 
     public ProjectResponse getProjectByName(String name) {
-        Project project = projectRepository.findByName(name)
+        Project project = projectRepository
+                .findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NAME_NOT_EXISTED));
 
         return modelMapper.map(project, ProjectResponse.class);
@@ -60,12 +64,11 @@ public class ProjectService {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public ProjectResponse updateProject(Integer id, ProjectCreationRequest request) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED));
+        Project project =
+                projectRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED));
         if (projectRepository.existsByName(request.getName())
-                && !project.getName().equals(request.getName())
-        ) {
-            throw new AppException(ErrorCode.PROJECT_NAME_EXISTED)  ;
+                && !project.getName().equals(request.getName())) {
+            throw new AppException(ErrorCode.PROJECT_NAME_EXISTED);
         }
         project.setName(request.getName());
         return modelMapper.map(projectRepository.save(project), ProjectResponse.class);

@@ -1,6 +1,5 @@
 package com.scaffold.spring_boot.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

@@ -1,5 +1,15 @@
 package com.scaffold.spring_boot.service;
 
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -8,17 +18,9 @@ import com.nimbusds.jwt.SignedJWT;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.InvalidatedTokenRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -70,12 +72,18 @@ public class JwtService {
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
             Date expiryTime = (isRefresh)
-                    ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
-                        .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                    ? new Date(signedJWT
+                            .getJWTClaimsSet()
+                            .getIssueTime()
+                            .toInstant()
+                            .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                            .toEpochMilli())
                     : signedJWT.getJWTClaimsSet().getExpirationTime();
 
-            return signedJWT.verify(verifier) && expiryTime.after(new Date())
-                    && !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
+            return signedJWT.verify(verifier)
+                    && expiryTime.after(new Date())
+                    && !invalidatedTokenRepository.existsById(
+                            signedJWT.getJWTClaimsSet().getJWTID());
         } catch (JOSEException | ParseException e) {
             log.error(e.getMessage());
             throw new AppException(ErrorCode.INVALID_TOKEN);
