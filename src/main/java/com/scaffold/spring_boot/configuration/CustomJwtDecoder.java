@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.scaffold.spring_boot.dto.request.IntrospectRequest;
 import com.scaffold.spring_boot.dto.response.IntrospectResponse;
+import com.scaffold.spring_boot.exception.AppException;
+import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,9 +36,9 @@ public class CustomJwtDecoder implements JwtDecoder {
     public Jwt decode(String token) throws JwtException {
         IntrospectResponse introspectResponse = authenticationService.introspect(
                 IntrospectRequest.builder().token("Bearer " + token).build());
-        //        if (!introspectResponse.getIsValid()) {
-        //            throw new AppException(ErrorCode.INVALID_TOKEN);
-        //        }
+        if (!introspectResponse.getIsValid()) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
         if (Objects.isNull(nimbusJwtDecoder)) {
             SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS256");
             nimbusJwtDecoder = NimbusJwtDecoder.withSecretKey(secretKeySpec)
