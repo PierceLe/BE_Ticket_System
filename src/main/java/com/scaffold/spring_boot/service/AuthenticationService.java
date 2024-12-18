@@ -15,6 +15,7 @@ import com.scaffold.spring_boot.repository.InvalidatedTokenRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationService {
-
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final BruteForceProtectionService bruteForceProtectionService;
@@ -63,7 +63,7 @@ public class AuthenticationService {
         var token = introspectRequest.getToken();
         boolean isValid = true;
         try {
-            if (!jwtService.verifyToken(token))
+            if (!jwtService.verifyToken(token, false))
                 isValid = false;
         }
         catch (AppException e) {
@@ -74,7 +74,7 @@ public class AuthenticationService {
     }
 
     public void logout(LogoutRequest request) {
-        if (jwtService.verifyToken(request.getToken())) {
+        if (jwtService.verifyToken(request.getToken(), true)) {
             try {
                 var signedToken = SignedJWT.parse(request.getToken().substring(7));
                 String jit = signedToken.getJWTClaimsSet().getJWTID();
@@ -87,6 +87,9 @@ public class AuthenticationService {
             } catch (ParseException e) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
             }
+            catch (AppException e) {
+                log.error(e.getMessage());
+            }
 
 
         }
@@ -94,7 +97,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse refreshToken(RefreshRequest request) {
         // - check the expiration date of token
-        if (jwtService.verifyToken(request.getToken())) {
+        if (jwtService.verifyToken(request.getToken(), true)) {
             try {
                 var signedJWT = SignedJWT.parse(request.getToken().substring(7));
                 var jit = signedJWT.getJWTClaimsSet().getJWTID();

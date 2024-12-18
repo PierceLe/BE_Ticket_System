@@ -27,22 +27,24 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     private final CustomJwtDecoder customJwtDecoder;
 
+    private final String[] PUBLIC_ENDPOINTS = {
+    "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+        httpSecurity.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/hello").permitAll()
                         .anyRequest().authenticated()
-                )
-                .csrf(AbstractHttpConfigurer::disable);
-
+        );
         httpSecurity.oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
                 httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer ->
                         jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }
 

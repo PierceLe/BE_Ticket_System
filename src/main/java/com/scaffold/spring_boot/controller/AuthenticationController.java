@@ -9,6 +9,7 @@ import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,14 +36,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> authenticateJwt(@RequestHeader("Authorization") @Valid LogoutRequest request) {
+    public ApiResponse<Void> authenticateJwt(@RequestBody @Valid LogoutRequest request) {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
     @PostMapping("/refresh")
-    public ApiResponse<AuthenticationResponse> refreshAuthentication(@RequestHeader("Authorization") @Valid RefreshRequest request) {
+    public ApiResponse<AuthenticationResponse> refreshAuthentication(@RequestBody @Valid RefreshRequest request) {
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(authenticationService.refreshToken(request))
                 .build();

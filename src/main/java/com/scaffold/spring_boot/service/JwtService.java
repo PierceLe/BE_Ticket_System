@@ -29,6 +29,12 @@ public class JwtService {
     @Value("${jwt.signerKey}")
     private String SIGNER_KEY;
 
+    @Value("${jwt.valid-duration}")
+    protected long VALID_DURATION;
+
+    @Value("${jwt.refreshable-duration}")
+    protected long REFRESHABLE_DURATION;
+
     public String generateToken(String userId, String role) {
         try {
             // Create JWT Header
@@ -39,7 +45,7 @@ public class JwtService {
                     .subject(userId)
                     .issuer("hale0087@uni.sydney.edu.au")
                     .issueTime(new Date())
-                    .expirationTime(Date.from(Instant.now().plus(24, ChronoUnit.HOURS)))
+                    .expirationTime(Date.from(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS)))
                     .claim("scope", role)
                     .jwtID(UUID.randomUUID().toString())
                     .build();
@@ -54,18 +60,19 @@ public class JwtService {
         }
     }
 
-    public boolean verifyToken(String bearerToken) {
+    public boolean verifyToken(String bearerToken, boolean isRefresh) {
         try {
             // Validate Bearer token format
-            log.info("Verifying token: {}", bearerToken);
             if (Objects.isNull(bearerToken) || !bearerToken.startsWith("Bearer ")) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
             }
             var token = bearerToken.substring(7);
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+            Date expiryTime = (isRefresh)
+                    ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                        .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                    : signedJWT.getJWTClaimsSet().getExpirationTime();
 
             return signedJWT.verify(verifier) && expiryTime.after(new Date())
                     && !invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID());
