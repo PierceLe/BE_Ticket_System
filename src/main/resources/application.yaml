@@ -10,7 +10,7 @@ spring:
     password: fpt_itsm
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
 jwt:
   signerKey: "wW4pYfEUZNCa3FcB7LMqQ4PtBQEBNaTlSK03edB12Cs3/fwJ64JNGFPvlkj6+UbI"
