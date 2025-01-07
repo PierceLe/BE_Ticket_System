@@ -3,6 +3,7 @@ package com.scaffold.spring_boot.controller;
 import java.util.List;
 
 import com.scaffold.spring_boot.dto.response.ListProjectResponse;
+import com.scaffold.spring_boot.dto.response.PageResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,13 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     @GetMapping
-    public ApiResponse<ListProjectResponse> getAllProjects(
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "1") Integer size,
-            @RequestParam(defaultValue = "name,asc") String[] sort
+    public ApiResponse<PageResponse<ProjectResponse>> getAllProjects(
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
-        return projectService.getAllProject(page, size, sort);
+        return ApiResponse.<PageResponse<ProjectResponse>>builder()
+                .result(projectService.getAllProject(page, size))
+                .build();
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")

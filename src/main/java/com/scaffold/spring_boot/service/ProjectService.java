@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.scaffold.spring_boot.dto.response.ListProjectResponse;
+import com.scaffold.spring_boot.dto.response.PageResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,36 +34,24 @@ public class ProjectService {
         Boolean projectExist = projectRepository.existsByName(request.getName());
 
         if (projectExist) {
-            throw new AppException(ErrorCode.UNIT_EXISTED);
+            throw new AppException(ErrorCode.PROJECT_NAME_EXISTED);
         }
         Project project = modelMapper.map(request, Project.class);
         projectRepository.save(project);
         return modelMapper.map(project, ProjectResponse.class);
     }
 
-    public ApiResponse<ListProjectResponse> getAllProject(Integer page, Integer size, String[] sort) {
-        String sortField = sort[0]; //name
-        String sortDirection = sort[1]; //asc
-        Sort.Direction direction = Objects.equals(sortDirection, "asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+    public PageResponse<ProjectResponse> getAllProject(Integer page, Integer size) {
 
-        Page<Project> projects = projectRepository.listProjects(pageable);
-
-        // Map the list of projects to a list of ProjectResponse
-        List<ProjectResponse> projectResponses = projects.stream()
-                .map(project -> modelMapper.map(project, ProjectResponse.class))
-                .collect(Collectors.toList());
-
-        ListProjectResponse response = ListProjectResponse.builder()
-                .totalPages(projects.getTotalPages())
-                .totalElements((int) projects.getTotalElements())
-                .currentPage(projects.getNumber() + 1)
-                .numberOfElements(projects.getNumberOfElements())
-                .data(projectResponses)
-                .build();
-
-        return ApiResponse.<ListProjectResponse>builder()
-                .result(response)
+        Sort sort = Sort.by("id").ascending();
+        Pageable pageable = PageRequest.of(page - 1, size);
+        var pageData = projectRepository.listProjects(pageable);
+        return PageResponse.<ProjectResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPage(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(pageData.getContent().stream().map((element) -> modelMapper.map(element, ProjectResponse.class)).toList())
                 .build();
     }
 
