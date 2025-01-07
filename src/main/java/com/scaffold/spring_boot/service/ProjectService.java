@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.scaffold.spring_boot.dto.response.PageResponse;
+import com.scaffold.spring_boot.utils.SortUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ModelMapper modelMapper;
+    private final SortUtils sortUtils;
 
     public ProjectResponse createProject(ProjectCreationRequest request) {
         Boolean projectExist = projectRepository.existsByName(request.getName());
@@ -39,17 +41,9 @@ public class ProjectService {
         return modelMapper.map(project, ProjectResponse.class);
     }
 
-    public PageResponse<ProjectResponse> getAllProject(Integer page, Integer size, List<List<String>> sort) {
+    public PageResponse<ProjectResponse> getAllProject(Integer page, Integer size, String sort) {
 
-        List<Order> orders = new ArrayList<>();
-        for (List<String> order : sort) {
-            String property = order.get(0);
-            Sort.Direction direction = Objects.equals(order.get(1), "asc")
-                    ? Sort.Direction.ASC
-                    : Sort.Direction.DESC
-            ;
-            orders.add(new Order(direction, property));
-        }
+        List<Order> orders = sortUtils.generateOrder(sort);
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(orders));
         var pageData = projectRepository.listProjects(pageable);
         return PageResponse.<ProjectResponse>builder()
