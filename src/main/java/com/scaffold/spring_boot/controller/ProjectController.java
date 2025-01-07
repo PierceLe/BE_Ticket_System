@@ -6,7 +6,7 @@ import com.scaffold.spring_boot.dto.response.ListProjectResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.scaffold.spring_boot.dto.request.ApiResponse;
+import com.scaffold.spring_boot.dto.response.ApiResponse;
 import com.scaffold.spring_boot.dto.request.project.ProjectCreationRequest;
 import com.scaffold.spring_boot.dto.response.ProjectResponse;
 import com.scaffold.spring_boot.service.ProjectService;

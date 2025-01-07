@@ -1,5 +1,6 @@
 package com.scaffold.spring_boot.controller;
 
+import com.scaffold.spring_boot.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;

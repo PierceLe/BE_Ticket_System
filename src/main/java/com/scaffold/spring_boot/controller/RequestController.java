@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.scaffold.spring_boot.dto.request.ApiResponse;
+import com.scaffold.spring_boot.dto.response.ApiResponse;
 import com.scaffold.spring_boot.dto.request.request_ticket.RequestCreationRequest;
 import com.scaffold.spring_boot.dto.response.RequestResponse;
 import com.scaffold.spring_boot.service.RequestService;

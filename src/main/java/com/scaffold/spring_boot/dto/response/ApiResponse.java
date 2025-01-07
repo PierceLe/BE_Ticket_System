@@ -1,4 +1,4 @@
-package com.scaffold.spring_boot.dto.request;
+package com.scaffold.spring_boot.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
