@@ -1,20 +1,18 @@
 package com.scaffold.spring_boot.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import com.scaffold.spring_boot.dto.response.ListProjectResponse;
 import com.scaffold.spring_boot.dto.response.PageResponse;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import com.scaffold.spring_boot.dto.response.ApiResponse;
 import com.scaffold.spring_boot.dto.request.project.ProjectCreationRequest;
 import com.scaffold.spring_boot.dto.response.ProjectResponse;
 import com.scaffold.spring_boot.entity.Project;
@@ -41,10 +39,18 @@ public class ProjectService {
         return modelMapper.map(project, ProjectResponse.class);
     }
 
-    public PageResponse<ProjectResponse> getAllProject(Integer page, Integer size) {
+    public PageResponse<ProjectResponse> getAllProject(Integer page, Integer size, List<List<String>> sort) {
 
-        Sort sort = Sort.by("id").ascending();
-        Pageable pageable = PageRequest.of(page - 1, size);
+        List<Order> orders = new ArrayList<>();
+        for (List<String> order : sort) {
+            String property = order.get(0);
+            Sort.Direction direction = Objects.equals(order.get(1), "asc")
+                    ? Sort.Direction.ASC
+                    : Sort.Direction.DESC
+            ;
+            orders.add(new Order(direction, property));
+        }
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(orders));
         var pageData = projectRepository.listProjects(pageable);
         return PageResponse.<ProjectResponse>builder()
                 .currentPage(page)

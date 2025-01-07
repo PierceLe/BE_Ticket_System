@@ -31,10 +31,11 @@ public class ProjectController {
     @GetMapping
     public ApiResponse<PageResponse<ProjectResponse>> getAllProjects(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(value = "sort", required = false) List<List<String>> sort
     ) {
         return ApiResponse.<PageResponse<ProjectResponse>>builder()
-                .result(projectService.getAllProject(page, size))
+                .result(projectService.getAllProject(page, size, sort))
                 .build();
     }
 
