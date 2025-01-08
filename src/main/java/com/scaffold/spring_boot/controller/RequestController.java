@@ -21,6 +21,8 @@ public class RequestController {
 
     @PostMapping
     public ApiResponse<RequestResponse> requestCreation(@RequestBody @NonNull RequestCreationRequest request) {
-        return ApiResponse.<RequestResponse>builder().code(200).build();
+        return ApiResponse.<RequestResponse>builder()
+                .code(200)
+                .build();
     }
 }
