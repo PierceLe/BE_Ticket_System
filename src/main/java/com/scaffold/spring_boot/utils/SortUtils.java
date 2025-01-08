@@ -2,14 +2,13 @@ package com.scaffold.spring_boot.utils;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.*;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Service
+@Component
 public class SortUtils {
     public List<Order> generateOrder(String sortParams) {
         List<Order> orders = new ArrayList<>();
