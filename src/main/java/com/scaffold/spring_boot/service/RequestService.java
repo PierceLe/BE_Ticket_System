@@ -3,6 +3,8 @@ package com.scaffold.spring_boot.service;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.scaffold.spring_boot.dto.response.UserResponse;
+import com.scaffold.spring_boot.entity.Users;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -64,7 +66,7 @@ public class RequestService {
                 .creator(userService.getMyInfo())
                 .createdAt(request.getCreatedAt())
                 .assignedUser(null)
-                .qaUser(null)
+                .qaUser(modelMapper.map(userRepository.findLeastBusyQA(), UserResponse.class))
                 .status(request.getStatus())
                 .estimatedStart(null)
                 .estimatedFinish(null)
