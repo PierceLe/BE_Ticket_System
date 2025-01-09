@@ -1,18 +1,23 @@
 package com.scaffold.spring_boot.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import com.scaffold.spring_boot.dto.response.UserResponse;
-import com.scaffold.spring_boot.entity.Users;
+import com.scaffold.spring_boot.dto.response.RequestResponse;
+import com.scaffold.spring_boot.mapper.RequestMapper;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scaffold.spring_boot.dto.request.request_ticket.RequestCreationRequest;
-import com.scaffold.spring_boot.dto.response.RequestResponse;
+import com.scaffold.spring_boot.dto.response.RequestCreationResponse;
+import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.entity.Request;
+import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Status;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
@@ -37,8 +42,9 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final ModelMapper modelMapper;
     private final FileUtils fileUtils;
+    private final RequestMapper requestMapper;
 
-    public RequestResponse createRequest(RequestCreationRequest requestCreationRequest, MultipartFile attachedFile) {
+    public RequestCreationResponse createRequest(RequestCreationRequest requestCreationRequest, MultipartFile attachedFile) {
         if (!projectRepository.existsById(requestCreationRequest.getProjectId())) {
             throw new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED);
         }
@@ -61,12 +67,13 @@ public class RequestService {
                     FILE_PATH + requestCreationRequest.getProjectId() + "_" + attachedFile.getOriginalFilename();
             request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
         }
-        return RequestResponse.builder()
+        Users assignedQA = userRepository.findLeastBusyQA();
+        return RequestCreationResponse.builder()
                 .project(projectService.getProjectById(request.getProjectId()))
                 .creator(userService.getMyInfo())
                 .createdAt(request.getCreatedAt())
                 .assignedUser(null)
-                .qaUser(modelMapper.map(userRepository.findLeastBusyQA(), UserResponse.class))
+                .qaUser(modelMapper.map(assignedQA, UserResponse.class))
                 .status(request.getStatus())
                 .estimatedStart(null)
                 .estimatedFinish(null)
@@ -91,5 +98,25 @@ public class RequestService {
                 || fileType.equalsIgnoreCase(
                         "application/vnd.openxmlformats-officedocument.wordprocessingml.document") // For DOCX
                 || fileType.equalsIgnoreCase("text/plain"); // For TXT
+    }
+
+    public RequestResponse getRequestById(Integer id) {
+        Request request = requestRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUEST_ID_NOT_FOUND));
+        return modelMapper.map(request, RequestResponse.class);
+    }
+
+
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
+    public List<RequestResponse> getRequestsFilter(
+            Integer projectId, String creatorId, String qaId, Status status, String assignedId) {
+
+        List<Request> filteredRequests = requestRepository.findRequestsByFilters(
+                projectId, creatorId, qaId, status, assignedId);
+
+        return filteredRequests.stream()
+                .map(requestMapper::toRequestResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -47,6 +47,7 @@ public enum ErrorCode {
     PROJECT_ID_NOT_EMPTY(400, "Project id is not empty", HttpStatus.BAD_REQUEST),
     DESCRIPTION_NOT_EMPTY(400, "Description is empty", HttpStatus.BAD_REQUEST),
     EXPECTED_TIME_NOT_EMPTY(400, "Expected time is not empty", HttpStatus.BAD_REQUEST),
+    REQUEST_ID_NOT_FOUND(400, "Request id not found", HttpStatus.BAD_REQUEST),
     ;
     private final int code;
     private final String message;
