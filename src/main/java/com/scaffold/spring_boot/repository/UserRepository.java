@@ -34,12 +34,13 @@ public interface UserRepository extends JpaRepository<Users, String> {
             @Param("fullName") String fullName,
             @Param("dob") LocalDate dob);
 
-    @Query("""
-    SELECT u FROM Users u 
-    WHERE u.role = 'QA' 
-    AND u.locked = FALSE
-    ORDER BY u.activeTickets ASC, 
-             u.recentResolvedTicket ASC NULLS FIRST
-    """)
+    @Query(
+            """
+	SELECT u FROM Users u
+	WHERE u.role = 'QA'
+	AND u.locked = FALSE
+	ORDER BY u.activeTickets ASC,
+			u.recentResolvedTicket ASC NULLS LAST
+	""")
     Users findLeastBusyQA();
 }

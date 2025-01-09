@@ -15,7 +15,7 @@ public class RequestCreationRequest {
     Integer projectId;
 
     @NotNull(message = "DESCRIPTION_NOT_EMPTY")
-    String descriptions;
+    String description;
 
     @NotNull(message = "EXPECTED_TIME_NOT_EMPTY")
     LocalDateTime expectedFinish;

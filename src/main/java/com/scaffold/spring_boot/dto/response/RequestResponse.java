@@ -1,35 +1,36 @@
 package com.scaffold.spring_boot.dto.response;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
+import com.scaffold.spring_boot.enums.Cause;
 import com.scaffold.spring_boot.enums.Status;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestResponse {
-    ProjectResponse project;
-    UserResponse creator;
-    LocalDate createdAt;
-    UserResponse assignedUser;
-    UserResponse qaUser;
-    Status status;
-    LocalDateTime estimatedStart;
-    LocalDateTime estimatedFinish;
-    LocalDateTime expectedFinish;
-    String cause;
-    String solution;
-    String qaOpinion;
-    String causeDetails;
-    String description;
-    String attachedFile;
-    String assignedNote;
-    String rejectedReason;
+    private Integer projectId;
+    private String creatorId;
+    private LocalDate createdAt;
+    private String qaId;
+    private String assignedId;
+    private Status status;
+    private LocalDateTime estimatedStart;
+    private LocalDateTime estimatedFinish;
+    private LocalDateTime expectedFinish;
+    private Cause cause;
+    private String solution;
+    private String qaOpinion;
+    private String causeDetails;
+    private String description;
+    private String attachedFile;
+    private String assignedNote;
+    private String rejectedReason;
 }
