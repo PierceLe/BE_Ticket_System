@@ -44,6 +44,9 @@ public enum ErrorCode {
     AVATAR_ALREADY_DEFAULT(400, "Avatar already default", HttpStatus.CONFLICT),
     TOKEN_GENERATION_FAILED(400, "Token generation failed", HttpStatus.INTERNAL_SERVER_ERROR),
     ACCOUNT_LOCKED(400, "Account locked", HttpStatus.CONFLICT),
+    PROJECT_ID_NOT_EMPTY(400, "Project id is not empty", HttpStatus.BAD_REQUEST),
+    DESCRIPTION_NOT_EMPTY(400, "Description is empty", HttpStatus.BAD_REQUEST),
+    EXPECTED_TIME_NOT_EMPTY(400, "Expected time is not empty", HttpStatus.BAD_REQUEST),
     ;
     private final int code;
     private final String message;
