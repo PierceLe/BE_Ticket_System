@@ -56,7 +56,7 @@ public class RequestService {
                 .qaId(null) //
                 .status(Status.PENDING)
                 .expectedFinish(requestCreationRequest.getExpectedFinish())
-                .description(requestCreationRequest.getDescriptions())
+                .description(requestCreationRequest.getDescription())
                 .build();
 
         if (Objects.isNull(attachedFile) || attachedFile.isEmpty()) {
@@ -68,6 +68,7 @@ public class RequestService {
             request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
         }
         Users assignedQA = userRepository.findLeastBusyQA();
+        requestRepository.save(request);
         return RequestCreationResponse.builder()
                 .project(projectService.getProjectById(request.getProjectId()))
                 .creator(userService.getMyInfo())

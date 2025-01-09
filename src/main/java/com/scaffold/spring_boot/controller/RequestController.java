@@ -3,6 +3,7 @@ package com.scaffold.spring_boot.controller;
 import com.scaffold.spring_boot.dto.response.RequestResponse;
 import com.scaffold.spring_boot.dto.response.UserResponse;
 import com.scaffold.spring_boot.enums.Status;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,7 @@ public class RequestController {
 
     @PostMapping
     public ApiResponse<RequestCreationResponse> requestCreation(
-            @RequestBody @NonNull RequestCreationRequest request,
+            @RequestBody @Valid RequestCreationRequest request,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<RequestCreationResponse>builder()
                 .code(200)

@@ -46,7 +46,24 @@ public class ApplicationInitConfig {
                         .activeTickets(0)
                         .build();
                 userRepository.save(user);
-                log.warn("admin user has been created with private password in dotenv files");
+                log.info("admin user has been created with private password in dotenv files");
+            }
+            if (!userRepository.existsByUsername("qa")) {
+                Users user = Users.builder()
+                        .username("qa")
+                        .password(passwordEncoder.encode("hale0087"))
+                        .role(Role.QA.name())
+                        .createdAt(LocalDate.now())
+                        .dob(LocalDate.of(2005, 1, 15))
+                        .email("haichau.hvsg@gmail.com")
+                        .description("Im the QA of this system")
+                        .fullName("Hai Chau Le")
+                        .locked(false)
+                        .unitId(1)
+                        .activeTickets(0)
+                        .build();
+                userRepository.save(user);
+                log.info("qa user has been created with private password in dotenv files");
             }
         };
     }
