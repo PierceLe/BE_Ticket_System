@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestResponse {
-    String title;
     ProjectResponse project;
     UserResponse creator;
     LocalDate createdAt;

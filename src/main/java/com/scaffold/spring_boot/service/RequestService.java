@@ -28,7 +28,9 @@ public class RequestService {
     @NonFinal
     private static final String FILE_PATH = System.getProperty("user.dir") + "/src/main/resources/attachedFile/";
     private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final RequestRepository requestRepository;
     private final ModelMapper modelMapper;
     private final FileUtils fileUtils;
@@ -52,9 +54,29 @@ public class RequestService {
         else if (!isValidAttachmentType(attachedFile.getContentType())) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE);
         }
-        String filePath = FILE_PATH + requestCreationRequest.getProjectId() + "_" + attachedFile.getOriginalFilename();
-        request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
-        return modelMapper.map(requestRepository.save(request), RequestResponse.class);
+        else {
+            String filePath = FILE_PATH + requestCreationRequest.getProjectId() + "_" + attachedFile.getOriginalFilename();
+            request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
+        }
+        return RequestResponse.builder()
+                .project(projectService.getProjectById(request.getProjectId()))
+                .creator(userService.getMyInfo())
+                .createdAt(request.getCreatedAt())
+                .assignedUser(null)
+                .qaUser(null)
+                .status(request.getStatus())
+                .estimatedStart(null)
+                .estimatedFinish(null)
+                .expectedFinish(request.getExpectedFinish())
+                .cause(null)
+                .solution(null)
+                .qaOpinion(null)
+                .causeDetails(null)
+                .description(request.getDescription())
+                .attachedFile(request.getAttachedFile())
+                .assignedNote(null)
+                .rejectedReason(null)
+                .build();
     }
 
 
