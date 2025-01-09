@@ -1,11 +1,7 @@
 package com.scaffold.spring_boot.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import com.scaffold.spring_boot.dto.response.PageResponse;
-import com.scaffold.spring_boot.utils.SortUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +11,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.scaffold.spring_boot.dto.request.project.ProjectCreationRequest;
+import com.scaffold.spring_boot.dto.response.PageResponse;
 import com.scaffold.spring_boot.dto.response.ProjectResponse;
 import com.scaffold.spring_boot.entity.Project;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.ProjectRepository;
+import com.scaffold.spring_boot.utils.SortUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,7 +49,9 @@ public class ProjectService {
                 .pageSize(pageData.getSize())
                 .totalPage(pageData.getTotalPages())
                 .totalElements(pageData.getTotalElements())
-                .data(pageData.getContent().stream().map((element) -> modelMapper.map(element, ProjectResponse.class)).toList())
+                .data(pageData.getContent().stream()
+                        .map((element) -> modelMapper.map(element, ProjectResponse.class))
+                        .toList())
                 .build();
     }
 
@@ -75,10 +75,8 @@ public class ProjectService {
         Project project =
                 projectRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED));
 
-        if (
-                projectRepository.existsByName(request.getName())
-                && !project.getName().equals(request.getName())
-        ) {
+        if (projectRepository.existsByName(request.getName())
+                && !project.getName().equals(request.getName())) {
             throw new AppException(ErrorCode.PROJECT_NAME_EXISTED);
         }
 

@@ -2,13 +2,12 @@ package com.scaffold.spring_boot.controller;
 
 import java.util.List;
 
-import com.scaffold.spring_boot.dto.response.ListProjectResponse;
-import com.scaffold.spring_boot.dto.response.PageResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.scaffold.spring_boot.dto.response.ApiResponse;
 import com.scaffold.spring_boot.dto.request.project.ProjectCreationRequest;
+import com.scaffold.spring_boot.dto.response.ApiResponse;
+import com.scaffold.spring_boot.dto.response.PageResponse;
 import com.scaffold.spring_boot.dto.response.ProjectResponse;
 import com.scaffold.spring_boot.service.ProjectService;
 
@@ -32,8 +31,7 @@ public class ProjectController {
     public ApiResponse<PageResponse<ProjectResponse>> getAllProjects(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(value = "sort", required = false, defaultValue = "name,asc" ) String sort
-    ) {
+            @RequestParam(value = "sort", required = false, defaultValue = "name,asc") String sort) {
         return ApiResponse.<PageResponse<ProjectResponse>>builder()
                 .result(projectService.getAllProject(page, size, sort))
                 .build();

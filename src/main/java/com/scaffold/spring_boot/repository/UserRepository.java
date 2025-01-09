@@ -33,4 +33,13 @@ public interface UserRepository extends JpaRepository<Users, String> {
             @Param("email") String email,
             @Param("fullName") String fullName,
             @Param("dob") LocalDate dob);
+
+    @Query("""
+    SELECT u FROM Users u 
+    WHERE u.role = 'QA' 
+    AND u.locked = FALSE
+    ORDER BY u.activeTickets ASC, 
+             u.recentResolvedTicket ASC NULLS FIRST
+    """)
+    Users findLeastBusyQA();
 }

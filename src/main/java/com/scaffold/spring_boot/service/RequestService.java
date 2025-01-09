@@ -1,5 +1,15 @@
 package com.scaffold.spring_boot.service;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
+import com.scaffold.spring_boot.dto.response.UserResponse;
+import com.scaffold.spring_boot.entity.Users;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.scaffold.spring_boot.dto.request.request_ticket.RequestCreationRequest;
 import com.scaffold.spring_boot.dto.response.RequestResponse;
 import com.scaffold.spring_boot.entity.Request;
@@ -7,26 +17,19 @@ import com.scaffold.spring_boot.enums.Status;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
 import com.scaffold.spring_boot.repository.ProjectRepository;
+import com.scaffold.spring_boot.repository.RequestRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
 import com.scaffold.spring_boot.utils.FileUtils;
-import lombok.experimental.NonFinal;
-import org.modelmapper.ModelMapper;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import com.scaffold.spring_boot.repository.RequestRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.util.Objects;
+import lombok.experimental.NonFinal;
 
 @Service
 @RequiredArgsConstructor
 public class RequestService {
     @NonFinal
     private static final String FILE_PATH = System.getProperty("user.dir") + "/src/main/resources/attachedFile/";
+
     private final ProjectRepository projectRepository;
     private final ProjectService projectService;
     private final UserRepository userRepository;
@@ -50,12 +53,12 @@ public class RequestService {
                 .description(requestCreationRequest.getDescriptions())
                 .build();
 
-        if (Objects.isNull(attachedFile) || attachedFile.isEmpty()) {}
-        else if (!isValidAttachmentType(attachedFile.getContentType())) {
+        if (Objects.isNull(attachedFile) || attachedFile.isEmpty()) {
+        } else if (!isValidAttachmentType(attachedFile.getContentType())) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE);
-        }
-        else {
-            String filePath = FILE_PATH + requestCreationRequest.getProjectId() + "_" + attachedFile.getOriginalFilename();
+        } else {
+            String filePath =
+                    FILE_PATH + requestCreationRequest.getProjectId() + "_" + attachedFile.getOriginalFilename();
             request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
         }
         return RequestResponse.builder()
@@ -63,7 +66,7 @@ public class RequestService {
                 .creator(userService.getMyInfo())
                 .createdAt(request.getCreatedAt())
                 .assignedUser(null)
-                .qaUser(null)
+                .qaUser(modelMapper.map(userRepository.findLeastBusyQA(), UserResponse.class))
                 .status(request.getStatus())
                 .estimatedStart(null)
                 .estimatedFinish(null)
@@ -79,15 +82,14 @@ public class RequestService {
                 .build();
     }
 
-
     private boolean isValidAttachmentType(String fileType) {
         return fileType.equalsIgnoreCase("image/jpeg") // For jpg and jpeg
                 || fileType.equalsIgnoreCase("image/png")
                 || fileType.equalsIgnoreCase("image/svg+xml")
                 || fileType.equalsIgnoreCase("application/pdf") // For PDF
                 || fileType.equalsIgnoreCase("application/msword") // For DOC
-                || fileType.equalsIgnoreCase("application/vnd.openxmlformats-officedocument.wordprocessingml.document") // For DOCX
+                || fileType.equalsIgnoreCase(
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document") // For DOCX
                 || fileType.equalsIgnoreCase("text/plain"); // For TXT
     }
-
 }

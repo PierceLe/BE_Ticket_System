@@ -1,11 +1,11 @@
 package com.scaffold.spring_boot.controller;
 
-import com.scaffold.spring_boot.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
 import com.scaffold.spring_boot.dto.request.*;
+import com.scaffold.spring_boot.dto.response.ApiResponse;
 import com.scaffold.spring_boot.dto.response.AuthenticationResponse;
 import com.scaffold.spring_boot.dto.response.IntrospectResponse;
 import com.scaffold.spring_boot.service.AuthenticationService;

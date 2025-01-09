@@ -3,9 +3,10 @@ package com.scaffold.spring_boot.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.*;
+
 import com.scaffold.spring_boot.enums.Cause;
 import com.scaffold.spring_boot.enums.Status;
-import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

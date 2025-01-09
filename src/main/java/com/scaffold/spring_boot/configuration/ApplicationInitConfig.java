@@ -43,6 +43,7 @@ public class ApplicationInitConfig {
                         .fullName("Pierce Le")
                         .locked(false)
                         .unitId(1)
+                        .activeTickets(0)
                         .build();
                 userRepository.save(user);
                 log.warn("admin user has been created with private password in dotenv files");

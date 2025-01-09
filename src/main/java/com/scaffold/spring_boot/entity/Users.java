@@ -1,6 +1,7 @@
 package com.scaffold.spring_boot.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
@@ -40,4 +41,6 @@ public class Users {
 
     LocalDate dob;
     Boolean locked;
+    Integer activeTickets;
+    LocalDateTime recentResolvedTicket;
 }
