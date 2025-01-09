@@ -3,6 +3,8 @@ package com.scaffold.spring_boot.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.scaffold.spring_boot.enums.Cause;
+import com.scaffold.spring_boot.enums.Status;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -20,24 +22,22 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    String title;
-
     @Column(name = "project_id")
     Integer projectId;
 
     @Column(name = "creator_id")
-    Integer creatorId;
+    String creatorId;
 
     @Column(name = "created_at")
     LocalDate createdAt;
 
     @Column(name = "assigned_id")
-    Integer assignedId;
+    String assignedId;
 
     @Column(name = "qa_id")
-    Integer qaId;
+    String qaId;
 
-    String status;
+    Status status;
 
     @Column(name = "estimated_start")
     LocalDateTime estimatedStart;
@@ -48,7 +48,7 @@ public class Request {
     @Column(name = "expected_finish")
     LocalDateTime expectedFinish;
 
-    String cause;
+    Cause cause;
     String solution;
 
     @Column(name = "qa_opinion")

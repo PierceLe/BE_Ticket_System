@@ -1,11 +1,10 @@
 package com.scaffold.spring_boot.service;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.scaffold.spring_boot.utils.FileUtils;
 import jakarta.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
@@ -46,6 +45,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final FileUtils fileUtils;
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     @Transactional
@@ -200,30 +200,18 @@ public class UserService {
         }
         // Validate file type
         String fileType = file.getContentType();
-        if (Objects.isNull(fileType) || !isValidFileType(fileType)) {
+        if (!isValidFileType(fileType)) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE);
         }
         Users user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         // Check if the user already has an avatar URL
         if (Objects.nonNull(user.getAvatarUrl())) {
             String oldFilePath = user.getAvatarUrl();
-            // Delete the old file
-            File oldFile = new File(oldFilePath);
-            if (oldFile.exists() && oldFile.isFile()) {
-                if (!oldFile.delete()) {
-                    throw new AppException(ErrorCode.DELETE_AVATAR_ERROR);
-                }
-            }
+            fileUtils.deleteFile(oldFilePath);
         }
         // Define file path
         String filePath = FILE_PATH + user.getUsername() + "_" + file.getOriginalFilename();
-        user.setAvatarUrl(filePath);
-        try {
-            // Save the file to the server
-            file.transferTo(new File(filePath));
-        } catch (IOException e) {
-            throw new AppException(ErrorCode.UPLOAD_AVATAR_ERROR);
-        }
+        user.setAvatarUrl(fileUtils.saveFile(filePath, file));
         // Save user entity and return response
         return modelMapper.map(userRepository.save(user), UserResponse.class);
     }
@@ -234,15 +222,9 @@ public class UserService {
         // Check if the user already has an avatar URL
         if (Objects.nonNull(user.getAvatarUrl())) {
             String oldFilePath = user.getAvatarUrl();
-            // Delete the old file
-            File oldFile = new File(oldFilePath);
-            if (oldFile.exists() && oldFile.isFile()) {
-                if (!oldFile.delete()) {
-                    throw new AppException(ErrorCode.DELETE_AVATAR_ERROR);
-                }
-                user.setAvatarUrl(null);
-                return modelMapper.map(userRepository.save(user), UserResponse.class);
-            }
+            fileUtils.deleteFile(oldFilePath);
+            user.setAvatarUrl(null);
+            return modelMapper.map(userRepository.save(user), UserResponse.class);
         }
         throw new AppException(ErrorCode.AVATAR_ALREADY_DEFAULT);
     }

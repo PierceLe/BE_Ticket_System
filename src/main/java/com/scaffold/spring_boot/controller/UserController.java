@@ -155,7 +155,7 @@ public class UserController {
                 .build();
     }
 
-    // update user's avatar
+    // delete user's avatar
     @DeleteMapping("{id}/avatar")
     public ApiResponse<UserResponse> userDeleteAvatar(@PathVariable @NonNull String id) {
         return ApiResponse.<UserResponse>builder()

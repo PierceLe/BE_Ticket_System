@@ -1,19 +1,20 @@
 package com.scaffold.spring_boot.dto.request.request_ticket;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestCreationRequest {
-    String title;
+    @NotNull(message = "PROJECT_ID_NOT_EMPTY")
     Integer projectId;
-    String cause;
-    String causeDetails;
+    @NotNull(message = "DESCRIPTION_NOT_EMPTY")
     String descriptions;
-    String attachedFile;
+    @NotNull(message = "EXPECTED_TIME_NOT_EMPTY")
+    LocalDateTime expectedFinish;
 }
