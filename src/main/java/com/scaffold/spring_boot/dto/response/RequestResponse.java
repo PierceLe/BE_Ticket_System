@@ -1,15 +1,15 @@
 package com.scaffold.spring_boot.dto.response;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.scaffold.spring_boot.enums.Cause;
 import com.scaffold.spring_boot.enums.Status;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
