@@ -13,8 +13,6 @@ import com.scaffold.spring_boot.dto.response.RequestCreationResponse;
 import com.scaffold.spring_boot.service.RequestService;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/requests")
 @RequiredArgsConstructor
@@ -23,8 +21,8 @@ public class RequestController {
 
     @PostMapping
     public ApiResponse<RequestCreationResponse> requestCreation(
-            @RequestBody @Valid RequestCreationRequest request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestPart("request") @Valid RequestCreationRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<RequestCreationResponse>builder()
                 .code(200)
                 .result(requestService.createRequest(request, file))
