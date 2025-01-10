@@ -3,11 +3,7 @@ package com.scaffold.spring_boot.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import com.scaffold.spring_boot.dto.response.*;
-import com.scaffold.spring_boot.mapper.RequestMapper;
-import com.scaffold.spring_boot.utils.SortUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,15 +14,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scaffold.spring_boot.dto.request.request_ticket.RequestCreationRequest;
+import com.scaffold.spring_boot.dto.response.*;
 import com.scaffold.spring_boot.entity.Request;
 import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Status;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
+import com.scaffold.spring_boot.mapper.RequestMapper;
 import com.scaffold.spring_boot.repository.ProjectRepository;
 import com.scaffold.spring_boot.repository.RequestRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
 import com.scaffold.spring_boot.utils.FileUtils;
+import com.scaffold.spring_boot.utils.SortUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
@@ -47,7 +46,8 @@ public class RequestService {
     private final RequestMapper requestMapper;
     private final SortUtils sortUtils;
 
-    public RequestCreationResponse createRequest(RequestCreationRequest requestCreationRequest, MultipartFile attachedFile) {
+    public RequestCreationResponse createRequest(
+            RequestCreationRequest requestCreationRequest, MultipartFile attachedFile) {
         if (!projectRepository.existsById(requestCreationRequest.getProjectId())) {
             throw new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED);
         }
@@ -105,23 +105,27 @@ public class RequestService {
     }
 
     public RequestResponse getRequestById(Integer id) {
-        Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.REQUEST_ID_NOT_FOUND));
+        Request request =
+                requestRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.REQUEST_ID_NOT_FOUND));
         return modelMapper.map(request, RequestResponse.class);
     }
 
-
-
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
     public PageResponse<RequestResponse> getRequestsFilter(
-            Integer projectId, String creatorId, String qaId, Status status, String assignedId, Integer page, Integer size, String sort) {
-
+            Integer projectId,
+            String creatorId,
+            String qaId,
+            Status status,
+            String assignedId,
+            Integer page,
+            Integer size,
+            String sort) {
 
         List<Sort.Order> orders = sortUtils.generateOrder(sort);
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(orders));
 
-        var pageData = requestRepository.findRequestsByFilters(
-                projectId, creatorId, qaId, status, assignedId, pageable);
+        var pageData =
+                requestRepository.findRequestsByFilters(projectId, creatorId, qaId, status, assignedId, pageable);
 
         return PageResponse.<RequestResponse>builder()
                 .currentPage(page)

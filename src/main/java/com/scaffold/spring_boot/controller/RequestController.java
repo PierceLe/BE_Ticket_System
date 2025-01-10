@@ -1,19 +1,19 @@
 package com.scaffold.spring_boot.controller;
 
-import com.scaffold.spring_boot.dto.response.PageResponse;
-import com.scaffold.spring_boot.dto.response.RequestResponse;
-import com.scaffold.spring_boot.enums.Status;
 import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.scaffold.spring_boot.dto.request.request_ticket.RequestCreationRequest;
 import com.scaffold.spring_boot.dto.response.ApiResponse;
+import com.scaffold.spring_boot.dto.response.PageResponse;
 import com.scaffold.spring_boot.dto.response.RequestCreationResponse;
+import com.scaffold.spring_boot.dto.response.RequestResponse;
+import com.scaffold.spring_boot.enums.Status;
 import com.scaffold.spring_boot.service.RequestService;
-import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/requests")
@@ -23,8 +23,8 @@ public class RequestController {
 
     @PostMapping
     public ApiResponse<RequestCreationResponse> requestCreation(
-            @RequestBody @Valid RequestCreationRequest request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestPart("request") @Valid RequestCreationRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<RequestCreationResponse>builder()
                 .code(200)
                 .result(requestService.createRequest(request, file))
@@ -43,7 +43,8 @@ public class RequestController {
             @RequestParam(value = "sort", required = false, defaultValue = "createdAt,asc") String sort) {
 
         ApiResponse<PageResponse<RequestResponse>> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(requestService.getRequestsFilter(projectId, creatorId, qaId, status, assignedId, page, size, sort));
+        apiResponse.setResult(
+                requestService.getRequestsFilter(projectId, creatorId, qaId, status, assignedId, page, size, sort));
         return apiResponse;
     }
 }
