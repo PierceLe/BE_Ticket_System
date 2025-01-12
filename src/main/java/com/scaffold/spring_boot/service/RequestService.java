@@ -37,26 +37,25 @@ public class RequestService {
     private static final String FILE_PATH = System.getProperty("user.dir") + "/src/main/resources/attachedFile/";
 
     private final ProjectRepository projectRepository;
-    private final ProjectService projectService;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final RequestRepository requestRepository;
+    private final ProjectService projectService;
+    private final UserService userService;
+    private final NotificationService notificationService;
     private final ModelMapper modelMapper;
     private final FileUtils fileUtils;
-    private final RequestMapper requestMapper;
     private final SortUtils sortUtils;
 
-    public RequestCreationResponse createRequest(
-            RequestCreationRequest requestCreationRequest, MultipartFile attachedFile) {
+    public RequestCreationResponse createRequest(RequestCreationRequest requestCreationRequest, MultipartFile attachedFile) {
         if (!projectRepository.existsById(requestCreationRequest.getProjectId())) {
             throw new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED);
         }
-        String id = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         Request request = Request.builder()
                 .projectId(requestCreationRequest.getProjectId())
-                .creatorId(id)
+                .creatorId(userId)
                 .createdAt(LocalDate.now())
-                .qaId(null) //
                 .status(Status.PENDING)
                 .expectedFinish(requestCreationRequest.getExpectedFinish())
                 .description(requestCreationRequest.getDescription())
@@ -70,26 +69,20 @@ public class RequestService {
                     FILE_PATH + requestCreationRequest.getProjectId() + "_" + attachedFile.getOriginalFilename();
             request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
         }
+
         Users assignedQA = userRepository.findLeastBusyQA();
         requestRepository.save(request);
+        notificationService.sendNotification("Bạn được giao 1 ticket", assignedQA.getId());
+
         return RequestCreationResponse.builder()
                 .project(projectService.getProjectById(request.getProjectId()))
                 .creator(userService.getMyInfo())
                 .createdAt(request.getCreatedAt())
-                .assignedUser(null)
                 .qaUser(modelMapper.map(assignedQA, UserResponse.class))
                 .status(request.getStatus())
-                .estimatedStart(null)
-                .estimatedFinish(null)
                 .expectedFinish(request.getExpectedFinish())
-                .cause(null)
-                .solution(null)
-                .qaOpinion(null)
-                .causeDetails(null)
                 .description(request.getDescription())
                 .attachedFile(request.getAttachedFile())
-                .assignedNote(null)
-                .rejectedReason(null)
                 .build();
     }
 
@@ -105,8 +98,9 @@ public class RequestService {
     }
 
     public RequestResponse getRequestById(Integer id) {
-        Request request =
-                requestRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.REQUEST_ID_NOT_FOUND));
+        Request request = requestRepository
+                .findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.REQUEST_ID_NOT_FOUND));
         return modelMapper.map(request, RequestResponse.class);
     }
 
@@ -120,12 +114,10 @@ public class RequestService {
             Integer page,
             Integer size,
             String sort) {
-
         List<Sort.Order> orders = sortUtils.generateOrder(sort);
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(orders));
 
-        var pageData =
-                requestRepository.findRequestsByFilters(projectId, creatorId, qaId, status, assignedId, pageable);
+        var pageData = requestRepository.findRequestsByFilters(projectId, creatorId, qaId, status, assignedId, pageable);
 
         return PageResponse.<RequestResponse>builder()
                 .currentPage(page)

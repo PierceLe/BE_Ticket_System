@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Realtime Notification</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+
+<h2>Thông báo mới:</h2>
+<div id="notifications"></div>
+
+<script>
+    const userId = '7facbbf1-81a7-4059-bc75-367296c64283'; // ID của user QA hiện tại
+
+    const socket = new SockJS('http://localhost:8080/api/v1/ws');
+    const stompClient = Stomp.over(socket); 
+
+    stompClient.debug = function (str) {
+        console.log(str);
+    };
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        // Subscribe vào kênh thông báo riêng cho user
+        stompClient.subscribe('/topic/notification/' + userId, function (notification) {
+            const message = notification.body;
+            console.log(message)
+            const div = document.createElement("div");
+            div.innerText = message;
+            document.getElementById("notifications").appendChild(div);
+        });
+    });
+</script>
+
+</body>
+</html>
