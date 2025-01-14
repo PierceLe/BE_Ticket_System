@@ -12,11 +12,11 @@
 <div id="notifications"></div>
 
 <script>
-    const userId = '7facbbf1-81a7-4059-bc75-367296c64283'; // ID của user QA hiện tại
+    const userId = '32a63f71-4837-4c4e-959d-fc992ce515e1'; // ID của user QA hiện tại
 
     const socket = new SockJS('http://localhost:8080/api/v1/ws');
     const stompClient = Stomp.over(socket); 
-
+x
     stompClient.debug = function (str) {
         console.log(str);
     };

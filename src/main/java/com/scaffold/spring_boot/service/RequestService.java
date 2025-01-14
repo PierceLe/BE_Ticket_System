@@ -1,9 +1,12 @@
 package com.scaffold.spring_boot.service;
 
+import java.net.Socket;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import com.scaffold.spring_boot.dto.request.SocketMessage;
+import com.scaffold.spring_boot.enums.MessageType;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +23,6 @@ import com.scaffold.spring_boot.entity.Users;
 import com.scaffold.spring_boot.enums.Status;
 import com.scaffold.spring_boot.exception.AppException;
 import com.scaffold.spring_boot.exception.ErrorCode;
-import com.scaffold.spring_boot.mapper.RequestMapper;
 import com.scaffold.spring_boot.repository.ProjectRepository;
 import com.scaffold.spring_boot.repository.RequestRepository;
 import com.scaffold.spring_boot.repository.UserRepository;
@@ -41,7 +43,7 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final ProjectService projectService;
     private final UserService userService;
-    private final NotificationService notificationService;
+    private final SocketService socketService;
     private final ModelMapper modelMapper;
     private final FileUtils fileUtils;
     private final SortUtils sortUtils;
@@ -51,10 +53,10 @@ public class RequestService {
             throw new AppException(ErrorCode.PROJECT_ID_NOT_EXISTED);
         }
 
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String creatorId = SecurityContextHolder.getContext().getAuthentication().getName();
         Request request = Request.builder()
                 .projectId(requestCreationRequest.getProjectId())
-                .creatorId(userId)
+                .creatorId(creatorId)
                 .createdAt(LocalDate.now())
                 .status(Status.PENDING)
                 .expectedFinish(requestCreationRequest.getExpectedFinish())
@@ -72,7 +74,13 @@ public class RequestService {
 
         Users assignedQA = userRepository.findLeastBusyQA();
         requestRepository.save(request);
-        notificationService.sendNotification("Bạn được giao 1 ticket", assignedQA.getId());
+        SocketMessage socketMessage = SocketMessage.builder()
+                .type(MessageType.CHAT)
+                .senderId(creatorId)
+                .receiverId(assignedQA.getId())
+                .content("You have been assigned to proceeded a new ticket")
+                .build();
+        socketService.sendNotification(socketMessage);
 
         return RequestCreationResponse.builder()
                 .project(projectService.getProjectById(request.getProjectId()))

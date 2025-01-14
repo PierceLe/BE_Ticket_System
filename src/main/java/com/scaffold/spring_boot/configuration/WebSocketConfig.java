@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -17,8 +18,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");  // Đích gửi tin nhắn
-        registry.setApplicationDestinationPrefixes("/app");  // Tiền tố cho message gửi từ client
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        // STOMP messages whose destination header begins with /app are routed to
+        // @MessageMapping methods in @Controller classes
+        config.setApplicationDestinationPrefixes("/app");
+        // Use the built-in message broker for subscriptions and broadcasting and
+        // route messages whose destination header begins with /topic or /queue to the broker
+        config.enableSimpleBroker("/topic", "/queue");
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+        registry.setMessageSizeLimit(4 * 8192);
+        registry.setTimeToFirstMessage(30000);
     }
 }

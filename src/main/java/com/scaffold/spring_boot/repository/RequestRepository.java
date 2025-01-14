@@ -26,4 +26,6 @@ public interface RequestRepository extends JpaRepository<Request, Integer> {
             @Param("status") Status status,
             @Param("assignedId") String assignedId,
             Pageable pageable);
+
+
 }
