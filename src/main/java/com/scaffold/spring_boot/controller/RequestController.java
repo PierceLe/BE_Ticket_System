@@ -1,5 +1,6 @@
 package com.scaffold.spring_boot.controller;
 
+import com.scaffold.spring_boot.entity.Request;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,6 @@ import com.scaffold.spring_boot.dto.request.request_ticket.RequestCreationReques
 import com.scaffold.spring_boot.dto.response.ApiResponse;
 import com.scaffold.spring_boot.dto.response.PageResponse;
 import com.scaffold.spring_boot.dto.response.RequestCreationResponse;
-import com.scaffold.spring_boot.dto.response.RequestResponse;
 import com.scaffold.spring_boot.enums.Status;
 import com.scaffold.spring_boot.service.RequestService;
 
@@ -32,7 +32,7 @@ public class RequestController {
     }
 
     @GetMapping()
-    public ApiResponse<PageResponse<RequestResponse>> getSearchFilter(
+    public ApiResponse<PageResponse<Request>> getSearchFilter(
             @RequestParam(value = "projectId", required = false) Integer projectId,
             @RequestParam(value = "creatorId", required = false) String creatorId,
             @RequestParam(value = "qaId", required = false) String qaId,
@@ -42,7 +42,7 @@ public class RequestController {
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
             @RequestParam(value = "sort", required = false, defaultValue = "createdAt,asc") String sort) {
 
-        ApiResponse<PageResponse<RequestResponse>> apiResponse = new ApiResponse<>();
+        ApiResponse<PageResponse<Request>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(
                 requestService.getRequestsFilter(projectId, creatorId, qaId, status, assignedId, page, size, sort));
         return apiResponse;

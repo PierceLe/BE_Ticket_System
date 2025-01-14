@@ -15,8 +15,8 @@
     const userId = '32a63f71-4837-4c4e-959d-fc992ce515e1'; // ID của user QA hiện tại
 
     const socket = new SockJS('http://localhost:8080/api/v1/ws');
-    const stompClient = Stomp.over(socket); 
-x
+    const stompClient = Stomp.over(socket);
+
     stompClient.debug = function (str) {
         console.log(str);
     };

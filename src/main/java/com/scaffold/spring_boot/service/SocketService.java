@@ -17,4 +17,6 @@ public class SocketService {
         messagingTemplate.convertAndSend(destination, socketMessage.getContent());
         return socketMessage;
     }
+
+
 }

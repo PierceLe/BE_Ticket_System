@@ -1,6 +1,4 @@
 package com.scaffold.spring_boot.service;
-
-import java.net.Socket;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -113,7 +111,7 @@ public class RequestService {
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('QA')")
-    public PageResponse<RequestResponse> getRequestsFilter(
+    public PageResponse<Request> getRequestsFilter(
             Integer projectId,
             String creatorId,
             String qaId,
@@ -127,14 +125,12 @@ public class RequestService {
 
         var pageData = requestRepository.findRequestsByFilters(projectId, creatorId, qaId, status, assignedId, pageable);
 
-        return PageResponse.<RequestResponse>builder()
+        return PageResponse.<Request>builder()
                 .currentPage(page)
                 .pageSize(pageData.getSize())
                 .totalPage(pageData.getTotalPages())
                 .totalElements(pageData.getTotalElements())
-                .data(pageData.getContent().stream()
-                        .map((element) -> modelMapper.map(element, RequestResponse.class))
-                        .toList())
+                .data(pageData.getContent())
                 .build();
     }
 }
