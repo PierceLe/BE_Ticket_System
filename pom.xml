@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.scaffold</groupId>
-	<artifactId>spring-boot</artifactId>
+	<artifactId>ticketSystem</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-boot</name>
 	<description>The scaffold for spring boot project</description>
