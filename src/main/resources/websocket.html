@@ -14,10 +14,8 @@
 <div id="error-message" style="color: red; font-weight: bold;"></div>
 
 <script>
-    const userId = 'ac883912-dd12-4ab7-b551-6711d56b60db';
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoYWxlMDA4N0B1bmkuc3lkbmV5LmVkdS5hdSIsInN1YiI6ImE2Nzk5ZGY2LTIwZDgtNDgyYy05Y2FmLWJkN2UzZDkwOTQ0ZiIsImV4cCI6MTczNzEzOTc4NCwiaWF0IjoxNzM3MTM2MTg0LCJqdGkiOiJmNTlkMTA0ZS04OGNiLTQ5OTktOTRkYy01NGJlM2E4MWY2ZjIiLCJzY29wZSI6IkFETUlOIn0.zBLUFXIQSZaE7Dy1sOb8yxoGfC1WKMp5hi5S0BTXtSY"; // JWT token
-
-    // Pass the token in the URL
+    const userId = '251186ec-69bc-4d28-8142-84c2e5918d1d';
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoYWxlMDA4N0B1bmkuc3lkbmV5LmVkdS5hdSIsInN1YiI6IjA4OWM5MGFmLTlhNzItNGU4OC05YWIyLTNlNzhkZDdjMDNiNiIsImV4cCI6MTczODcxNDc4OCwiaWF0IjoxNzM4Njc4Nzg4LCJqdGkiOiJhODEwMGNkZC1kZjZjLTRmOGItYjRlYS0wZjNjNzAwYjNjOWEiLCJzY29wZSI6IkFETUlOIn0.dYUTm-6F_g0zcq-uGo2iWX_eV3utrqirITZ_ZLBO8-I";    // Pass the token in the URL
     const socket = new SockJS(`http://localhost:8080/api/v1/ws?token=${token}`);
     const stompClient = Stomp.over(socket);
 
