@@ -70,7 +70,9 @@ public class RequestService {
             request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
         }
 
-        Users assignedQA = userRepository.findLeastBusyQA();
+        List<Users> listQA = userRepository.findLeastBusyQA();
+        Users assignedQA = listQA.getFirst();
+        request.setQaId(assignedQA.getId());
         requestRepository.save(request);
         SocketMessage socketMessage = SocketMessage.builder()
                 .type(MessageType.CHAT)
