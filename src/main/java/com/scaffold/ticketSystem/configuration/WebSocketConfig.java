@@ -1,21 +1,24 @@
 package com.scaffold.ticketSystem.configuration;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
+@Setter
 @Configuration
-@RequiredArgsConstructor
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final WebSocketAuthInterceptor webSocketAuthInterceptor;
+    @Autowired
+    private WebSocketAuthInterceptor webSocketAuthInterceptor;
 //    @Lazy
 //    private final TaskScheduler messageBrokerTaskScheduler;
 
@@ -29,8 +32,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // STOMP messages whose destination header begins with /app are routed to
-        // @MessageMapping methods in @Controller classes
         config.setApplicationDestinationPrefixes("/app");
         // Use the built-in message broker for subscriptions and broadcasting and
         // route messages whose destination header begins with /topic or /queue to the broker
