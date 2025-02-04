@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.scaffold.ticketSystem.dto.request.SocketMessage;
 import com.scaffold.ticketSystem.enums.MessageType;
+import com.scaffold.ticketSystem.repository.dao.LeastBusyQA_DAO;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -70,7 +71,8 @@ public class RequestService {
             request.setAttachedFile(fileUtils.saveFile(filePath, attachedFile));
         }
 
-        Users assignedQA = userRepository.findLeastBusyQA();
+        LeastBusyQA_DAO assignedQA = userRepository.findLeastBusyQA().getFirst();
+        request.setQaId(assignedQA.getId());
         requestRepository.save(request);
         SocketMessage socketMessage = SocketMessage.builder()
                 .type(MessageType.CHAT)

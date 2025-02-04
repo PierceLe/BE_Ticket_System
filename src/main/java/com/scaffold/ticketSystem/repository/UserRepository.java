@@ -3,6 +3,7 @@ package com.scaffold.ticketSystem.repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.scaffold.ticketSystem.repository.dao.LeastBusyQA_DAO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,11 +37,14 @@ public interface UserRepository extends JpaRepository<Users, String> {
 
     @Query(
             """
-	SELECT u FROM Users u
-	WHERE u.role = 'QA'
-	AND u.locked = FALSE
-	ORDER BY u.activeTickets ASC,
-			u.recentResolvedTicket ASC NULLS LAST
+	SELECT u.id id, u.fullName fullName,
+         COUNT(r.id) AS requestsAmount,
+         MAX(r.createdAt) AS lastAssignedTime
+         FROM Users u
+         LEFT JOIN Request r ON u.id = r.qaId AND r.status != com.scaffold.ticketSystem.enums.Status.DONE
+         where u.role = 'QA'
+         GROUP BY u.id, u.fullName
+         ORDER BY requestsAmount ASC, lastAssignedTime ASC
 	""")
-    Users findLeastBusyQA();
+    List<LeastBusyQA_DAO> findLeastBusyQA();
 }

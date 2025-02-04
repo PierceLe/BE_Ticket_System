@@ -10,11 +10,13 @@
 
 <h2>Thông báo mới:</h2>
 <div id="notifications"></div>
+<div id="success-message" style="color: green; font-weight: bold;"></div>
+<div id="error-message" style="color: red; font-weight: bold;"></div>
 
 <script>
-    const userId = '32a63f71-4837-4c4e-959d-fc992ce515e1'; // ID của user QA hiện tại
-
-    const socket = new SockJS('http://localhost:8080/api/v1/ws');
+    const userId = '251186ec-69bc-4d28-8142-84c2e5918d1d';
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoYWxlMDA4N0B1bmkuc3lkbmV5LmVkdS5hdSIsInN1YiI6IjA4OWM5MGFmLTlhNzItNGU4OC05YWIyLTNlNzhkZDdjMDNiNiIsImV4cCI6MTczODcxNDc4OCwiaWF0IjoxNzM4Njc4Nzg4LCJqdGkiOiJhODEwMGNkZC1kZjZjLTRmOGItYjRlYS0wZjNjNzAwYjNjOWEiLCJzY29wZSI6IkFETUlOIn0.dYUTm-6F_g0zcq-uGo2iWX_eV3utrqirITZ_ZLBO8-I";    // Pass the token in the URL
+    const socket = new SockJS(`http://localhost:8080/api/v1/ws?token=${token}`);
     const stompClient = Stomp.over(socket);
 
     stompClient.debug = function (str) {
@@ -23,16 +25,31 @@
 
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
+        document.getElementById("success-message").innerText = "WebSocket connect successfully.";
 
-        // Subscribe vào kênh thông báo riêng cho user
-        stompClient.subscribe('/topic/notification/' + userId, function (notification) {
+        // Subscribe to the user's notification topic
+        stompClient.subscribe(`/topic/notification/${userId}`, function (notification) {
             const message = notification.body;
-            console.log(message)
+            console.log(message);
             const div = document.createElement("div");
             div.innerText = message;
             document.getElementById("notifications").appendChild(div);
         });
+    }, function (error) {
+        console.error('Connection error:', error);
+
+        let errorMsg = "WebSocket connection failed. Please try again later.";
+        if (error && error.headers && error.headers.message) {
+            errorMsg = "Error: " + error.headers.message;
+        }
+
+        document.getElementById("error-message").innerText = errorMsg;
     });
+
+    // Handle unexpected disconnection
+    socket.onclose = function (event) {
+        document.getElementById("error-message").innerText = "WebSocket connection closed.";
+    };
 </script>
 
 </body>
