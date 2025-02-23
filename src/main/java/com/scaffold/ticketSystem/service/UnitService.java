@@ -1,6 +1,8 @@
 package com.scaffold.ticketSystem.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +31,9 @@ public class UnitService {
     private final UnitMapper unitMapper;
     private final UserMapper userMapper;
     private final ModelMapper modelMapper;
+    private final RedisService redisService;
+
+    private static final String ALL_UNITS = "allUnits";
 
     public UnitCreationResponse createUnit(UnitCreationRequest request) {
         Boolean unitExist = unitRepository.existsByName(request.getName());
@@ -42,9 +47,14 @@ public class UnitService {
     }
 
     public ApiResponse<List<UnitResponse>> getAllUnits() {
-        List<Unit> units = unitRepository.findAll();
+        List<Unit> allUnits = (List<Unit>) redisService.getObjectFromCache(ALL_UNITS);
+        List<UnitResponse> unitResponses;
+        if (Objects.isNull(allUnits)) {
+            allUnits = unitRepository.findAll();
+            redisService.saveObjectToCache(ALL_UNITS, allUnits);
+        }
         return ApiResponse.<List<UnitResponse>>builder()
-                .result(unitMapper.toUnitResponseList(units))
+                .result(unitMapper.toUnitResponseList(allUnits))
                 .build();
     }
 
