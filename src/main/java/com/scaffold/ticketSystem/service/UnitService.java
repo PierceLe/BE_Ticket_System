@@ -42,6 +42,7 @@ public class UnitService {
             throw new AppException(ErrorCode.UNIT_EXISTED);
         }
         Unit unit = modelMapper.map(request, Unit.class);
+        redisService.clearCacheByKey(ALL_UNITS);
         unitRepository.save(unit);
         return modelMapper.map(unit, UnitCreationResponse.class);
     }
@@ -78,6 +79,7 @@ public class UnitService {
             throw new AppException(ErrorCode.UNIT_NAME_EXISTED);
         }
         unit.setName(request.getName());
+        redisService.clearCacheByKey(ALL_UNITS);
         return unitMapper.toUnitResponse(unitRepository.save(unit));
     }
 
@@ -87,6 +89,7 @@ public class UnitService {
     }
 
     public List<UserResponse> getUsersInSpecficUnits(Integer unitId) {
+        redisService.clearCacheByKey(ALL_UNITS);
         return userMapper.toUserResponseList(userRepository.findByUnitId(unitId));
     }
 }

@@ -23,10 +23,9 @@ public class RequestController {
 
     @PostMapping
     public ApiResponse<RequestCreationResponse> requestCreation(
-            @RequestPart("request") @Valid RequestCreationRequest request
-//            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestPart("request") @Valid RequestCreationRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        MultipartFile file = null;
         return ApiResponse.<RequestCreationResponse>builder()
                 .code(200)
                 .result(requestService.createRequest(request, file))
